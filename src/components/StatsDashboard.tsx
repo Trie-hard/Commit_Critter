@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CritterStats, GitHubActivityData } from '../types/critter';
+import { requestNotificationPermission, sendCritterNotification } from '../services/notificationService';
+import { soundFx } from '../services/audioEngine';
 import { 
   Zap, 
   Smile, 
@@ -7,10 +9,13 @@ import {
   GitCommit, 
   Code2, 
   Clock, 
-  ExternalLink,
-  ShieldCheck,
-  Moon,
-  Swords
+  ExternalLink, 
+  ShieldCheck, 
+  Moon, 
+  Swords,
+  Calendar,
+  Bell,
+  BellRing
 } from 'lucide-react';
 
 interface StatsDashboardProps {
@@ -20,6 +25,37 @@ interface StatsDashboardProps {
 
 export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, githubData }) => {
   const expPercent = Math.min(100, Math.round((stats.exp / stats.maxExp) * 100));
+  const [notifsEnabled, setNotifsEnabled] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted';
+  });
+
+  const handleToggleNotifications = async () => {
+    soundFx.playClick();
+    const granted = await requestNotificationPermission();
+    setNotifsEnabled(granted);
+    if (granted) {
+      soundFx.playChirp();
+      sendCritterNotification(
+        '🐾 Commit Critter Alert Active!',
+        `Your ${stats.stage} will notify you if you forget to commit for 3 days!`
+      );
+    }
+  };
+
+  // Generate 16 weeks of contribution squares (16 cols x 7 rows = 112 days)
+  const heatmapSquares = Array.from({ length: 112 }).map((_, i) => {
+    const daysFromEnd = 111 - i;
+    const isStreakDay = daysFromEnd < githubData.streakDays;
+    const hasRecentCommit = daysFromEnd < Math.min(githubData.totalRecentCommits, 25) && (i % 2 === 0 || isStreakDay);
+    
+    let levelClass = 'bg-slate-800/80';
+    if (isStreakDay) {
+      levelClass = 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]';
+    } else if (hasRecentCommit) {
+      levelClass = i % 3 === 0 ? 'bg-emerald-600' : 'bg-emerald-700/80';
+    }
+    return { id: i, levelClass, daysFromEnd };
+  });
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-xl">
@@ -106,17 +142,35 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, githubDat
 
       {/* 2. GitHub Activity & Streak Overview */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-md">
-        <h3 className="font-pixel text-xs text-slate-300 uppercase tracking-wider mb-4 flex items-center justify-between">
-          <span>GitHub Habit Metrics</span>
-          <a
-            href={`https://github.com/${githubData.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-cyan-400 hover:text-cyan-300 text-xs flex items-center gap-1 lowercase font-mono"
-          >
-            @{githubData.username} <ExternalLink className="w-3 h-3" />
-          </a>
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-pixel text-xs text-slate-300 uppercase tracking-wider">
+            GitHub Habit Metrics
+          </h3>
+          <div className="flex items-center gap-3">
+            {/* Notification Alert Toggle */}
+            <button
+              onClick={handleToggleNotifications}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-mono border transition-all ${
+                notifsEnabled
+                  ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 shadow-sm'
+                  : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-white'
+              }`}
+              title="Toggle Browser Pet Misses You Notifications"
+            >
+              {notifsEnabled ? <BellRing className="w-3 h-3 text-emerald-400 animate-bounce" /> : <Bell className="w-3 h-3" />}
+              <span>{notifsEnabled ? 'Alerts On' : 'Enable Alerts'}</span>
+            </button>
+
+            <a
+              href={`https://github.com/${githubData.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 text-xs flex items-center gap-1 lowercase font-mono"
+            >
+              @{githubData.username} <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           
@@ -146,6 +200,40 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, githubDat
             <div className="text-[10px] text-slate-400 uppercase font-pixel">Rhythm</div>
           </div>
 
+        </div>
+
+        {/* Mini Contribution Heatmap */}
+        <div className="mb-6 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-300 font-semibold mb-3">
+            <span className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Contribution Heatmap (16 Weeks)</span>
+            </span>
+            <span className="text-[11px] text-emerald-400 font-bold">
+              {githubData.streakDays} Day Active Streak
+            </span>
+          </div>
+          
+          <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto py-1">
+            {heatmapSquares.map((sq) => (
+              <div
+                key={sq.id}
+                className={`w-2.5 h-2.5 rounded-sm transition-all hover:scale-125 ${sq.levelClass}`}
+                title={sq.daysFromEnd < githubData.streakDays ? `Active streak day!` : undefined}
+              />
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-2 pt-2 border-t border-slate-800/80">
+            <span>Less</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-sm bg-slate-800" />
+              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-800" />
+              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-600" />
+              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-400" />
+            </div>
+            <span>More Activity</span>
+          </div>
         </div>
 
         {/* Language Breakdown */}
