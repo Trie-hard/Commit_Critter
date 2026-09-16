@@ -1,61 +1,287 @@
+/* ──────────────────────────────────────────────────
+   GOOGLE FONTS – must be first, before @tailwind
+   ────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;800&family=Press+Start+2P&family=VT323&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────────────
+   BASE RESET
+   ────────────────────────────────────────────────── */
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
   body {
-    @apply bg-cyber-bg text-slate-100 antialiased overflow-x-hidden;
+    @apply bg-cosmic-void text-slate-100 antialiased overflow-x-hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
-/* Custom retro CRT scanline effect */
+/* ──────────────────────────────────────────────────
+   STAR FIELD — pure CSS, no JS required
+   Three layers of stars at different sizes / speeds
+   ────────────────────────────────────────────────── */
+.star-field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star-layer {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(232,240,253,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(232,240,253,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 38% 10%, rgba(232,240,253,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 80%, rgba(232,240,253,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 62% 35%, rgba(232,240,253,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 65%, rgba(232,240,253,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 15%, rgba(232,240,253,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 48%, rgba(232,240,253,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 15% 72%, rgba(126,168,216,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 44% 90%, rgba(126,168,216,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 68% 5%, rgba(126,168,216,0.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 82% 82%, rgba(167,139,250,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 6% 44%, rgba(167,139,250,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 30%, rgba(232,240,253,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 50%, rgba(232,240,253,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 25%, rgba(232,240,253,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 70%, rgba(232,240,253,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 4%  88%, rgba(232,240,253,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 97% 30%, rgba(232,240,253,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 47% 12%, rgba(232,240,253,0.5) 0%, transparent 100%);
+}
+
+.star-layer-1 { animation: starTwinkle1 4s ease-in-out infinite; }
+.star-layer-2 { animation: starTwinkle2 5.5s ease-in-out infinite 1.2s; }
+.star-layer-3 { animation: starTwinkle1 7s ease-in-out infinite 2.8s; opacity: 0.5; }
+
+@keyframes starTwinkle1 {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.02); }
+}
+@keyframes starTwinkle2 {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.8; }
+}
+
+/* ──────────────────────────────────────────────────
+   NEBULA AMBIENT BLOBS
+   ────────────────────────────────────────────────── */
+.nebula-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+/* ──────────────────────────────────────────────────
+   GLASS PANEL — Swiss Swiss grid meets Cosmic glass
+   ────────────────────────────────────────────────── */
+.glass-panel {
+  background: rgba(20, 33, 61, 0.45);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 1px 0  rgba(255, 255, 255, 0.06) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.3) inset;
+}
+
+.glass-panel-bright {
+  background: rgba(26, 45, 80, 0.4);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.55),
+    0 1px 0  rgba(255, 255, 255, 0.09) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.25) inset;
+}
+
+/* ──────────────────────────────────────────────────
+   GLASS ORB BUTTON
+   ────────────────────────────────────────────────── */
+.glass-orb {
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 60%);
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -2px 8px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.glass-orb:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 12px 36px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -2px 8px rgba(0,0,0,0.3);
+}
+
+.glass-orb:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.5),
+    inset 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Plasma ring inner highlight */
+.glass-orb::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 38% 28%, rgba(255,255,255,0.22) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ──────────────────────────────────────────────────
+   CRT SCANLINES (Optional LCD overlay)
+   ────────────────────────────────────────────────── */
 .scanlines {
   position: relative;
   overflow: hidden;
 }
 
-.scanlines::before {
+.scanlines::after {
   content: " ";
   display: block;
   position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  z-index: 20;
+  inset: 0;
+  background:
+    linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.22) 50%),
+    linear-gradient(90deg, rgba(255,0,0,0.02), rgba(0,255,0,0.01), rgba(0,0,255,0.02));
   background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ──────────────────────────────────────────────────
+   COMMIT TICKER TAPE
+   ────────────────────────────────────────────────── */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: tickerScroll 28s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* ──────────────────────────────────────────────────
+   ECG VITAL LINE
+   ────────────────────────────────────────────────── */
+.ecg-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: ecgDraw 2.4s ease-in-out infinite;
+}
+
+@keyframes ecgDraw {
+  0%   { stroke-dashoffset: 600; opacity: 0.3; }
+  15%  { opacity: 1; }
+  60%  { stroke-dashoffset: 0; }
+  85%  { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.3; }
+}
+
+/* ──────────────────────────────────────────────────
+   ORBITAL RING
+   ────────────────────────────────────────────────── */
+.orbital-ring {
+  border-radius: 50%;
+  border: 1px solid;
+  position: absolute;
   pointer-events: none;
 }
 
-/* Tamagotchi LCD screen grid styling */
+/* ──────────────────────────────────────────────────
+   RIVETED BORDER (Steampunk influence)
+   ────────────────────────────────────────────────── */
+.riveted {
+  position: relative;
+}
+
+.riveted::before,
+.riveted::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.6), rgba(100,100,100,0.3));
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.riveted::before { top: 8px; left: 8px; }
+.riveted::after  { top: 8px; right: 8px; }
+
+/* ──────────────────────────────────────────────────
+   TYPOGRAPHY UTILITIES
+   ────────────────────────────────────────────────── */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #00f0ff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #eab308 0%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ──────────────────────────────────────────────────
+   SCROLLBARS
+   ────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #070b16; }
+::-webkit-scrollbar-thumb { background: #1a2d50; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #243d6a; }
+
+/* ──────────────────────────────────────────────────
+   SELECTION
+   ────────────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 240, 255, 0.25);
+  color: #e8f0fd;
+}
+
+/* ──────────────────────────────────────────────────
+   PIXEL LCD (kept for shell themes)
+   ────────────────────────────────────────────────── */
 .pixel-lcd-bg {
   background-color: #9bbc0f;
-  background-image: radial-gradient(#8bac0f 15%, transparent 16%), radial-gradient(#8bac0f 15%, transparent 16%);
+  background-image:
+    radial-gradient(#8bac0f 15%, transparent 16%),
+    radial-gradient(#8bac0f 15%, transparent 16%);
   background-size: 8px 8px;
   background-position: 0 0, 4px 4px;
 }
 
-/* Cyber dark LCD screen */
 .cyber-lcd-bg {
-  background-color: #0b111e;
-  background-image: radial-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 0);
+  background-color: #060e1c;
+  background-image: radial-gradient(rgba(0,240,255,0.07) 1px, transparent 0);
   background-size: 12px 12px;
-}
-
-/* Smooth custom scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0d1320;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #25334d;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3b5078;
 }

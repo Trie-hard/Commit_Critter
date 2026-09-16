@@ -2,20 +2,9 @@ import React, { useState } from 'react';
 import { CritterStats, GitHubActivityData } from '../types/critter';
 import { requestNotificationPermission, sendCritterNotification } from '../services/notificationService';
 import { soundFx } from '../services/audioEngine';
-import { 
-  Zap, 
-  Smile, 
-  Flame, 
-  GitCommit, 
-  Code2, 
-  Clock, 
-  ExternalLink, 
-  ShieldCheck, 
-  Moon, 
-  Swords,
-  Calendar,
-  Bell,
-  BellRing
+import {
+  Flame, GitCommit, Code2, Clock,
+  ExternalLink, Moon, Swords, Bell, BellRing, Calendar,
 } from 'lucide-react';
 
 interface StatsDashboardProps {
@@ -23,11 +12,141 @@ interface StatsDashboardProps {
   githubData: GitHubActivityData;
 }
 
+// ECG path builder — generates a realistic-looking oscilloscope waveform SVG path
+function buildEcgPath(value: number, width = 280, height = 44): string {
+  const mid = height / 2;
+  const amplitude = (value / 100) * (height / 2 - 4);
+  // Baseline flat → spike up → spike down → flat with trailing ripples
+  const pts: [number, number][] = [
+    [0, mid],
+    [width * 0.12, mid],
+    [width * 0.22, mid],
+    [width * 0.28, mid - amplitude * 0.3],
+    [width * 0.33, mid + amplitude * 0.5],
+    [width * 0.38, mid - amplitude],
+    [width * 0.44, mid + amplitude * 0.25],
+    [width * 0.50, mid - amplitude * 0.12],
+    [width * 0.56, mid],
+    [width * 0.64, mid - amplitude * 0.06],
+    [width * 0.72, mid + amplitude * 0.04],
+    [width * 0.80, mid],
+    [width, mid],
+  ];
+  return pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+}
+
+// Mini hexagonal tile stat widget
+const StatHex: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent: string;
+}> = ({ icon, label, value, accent }) => (
+  <div
+    className="glass-panel rounded-2xl p-3 flex flex-col items-center gap-1 text-center hover:scale-105 transition-transform duration-200 cursor-default"
+    style={{ minWidth: '72px' }}
+  >
+    <div style={{ color: accent }}>{icon}</div>
+    <div className="text-base font-mono font-bold text-white leading-none">{value}</div>
+    <div className="font-pixel text-[8px] text-slate-400 uppercase">{label}</div>
+  </div>
+);
+
+// ECG Vital bar component
+const EcgVital: React.FC<{
+  label: string;
+  value: number;
+  subtext: string;
+  strokeColor: string;
+  bgGlow: string;
+}> = ({ label, value, subtext, strokeColor, bgGlow }) => {
+  const path = buildEcgPath(value);
+
+  return (
+    <div className="glass-panel rounded-2xl p-4 relative overflow-hidden">
+      {/* Glow behind the graph */}
+      <div
+        className="absolute inset-0 opacity-10 pointer-events-none"
+        style={{ background: bgGlow }}
+      />
+
+      <div className="flex justify-between items-baseline mb-2">
+        <span className="text-xs font-mono font-semibold" style={{ color: strokeColor }}>
+          {label}
+        </span>
+        <span className="font-pixel text-[10px] text-white/80">{value}%</span>
+      </div>
+
+      {/* ECG Graph */}
+      <svg
+        width="100%" height="44" viewBox="0 0 280 44"
+        preserveAspectRatio="none"
+        className="block"
+      >
+        {/* Background grid lines */}
+        {[0.25, 0.5, 0.75].map((f) => (
+          <line
+            key={f}
+            x1="0" y1={44 * f} x2="280" y2={44 * f}
+            stroke="rgba(255,255,255,0.04)"
+            strokeWidth="1"
+          />
+        ))}
+        {/* Trailing fill area */}
+        <path
+          d={`${path} L 280 44 L 0 44 Z`}
+          fill={`url(#ecgFill-${label})`}
+          opacity="0.15"
+        />
+        <defs>
+          <linearGradient id={`ecgFill-${label}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={strokeColor} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {/* ECG line with animation */}
+        <path
+          d={path}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="ecg-line"
+          style={{ strokeDasharray: 600, animationDuration: `${2.4 + (100 - value) * 0.01}s` }}
+        />
+        {/* Blinking cursor dot at the right edge */}
+        <circle cx="280" cy="22" r="3" fill={strokeColor} opacity="0.85">
+          <animate attributeName="opacity" values="0.2;1;0.2" dur="1.2s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+
+      <p className="text-[10px] text-slate-400 font-mono mt-1.5">{subtext}</p>
+    </div>
+  );
+};
+
+// LED heatmap cell
+const HeatCell: React.FC<{ active: boolean; streak: boolean }> = ({ active, streak }) => (
+  <div
+    className="rounded-sm transition-all"
+    style={{
+      width: '10px', height: '10px',
+      background: streak
+        ? '#22c55e'
+        : active
+        ? '#16a34a'
+        : 'rgba(255,255,255,0.05)',
+      boxShadow: streak ? '0 0 5px rgba(34,197,94,0.6)' : undefined,
+    }}
+    title={streak ? 'Active streak day' : active ? 'Activity' : 'No activity'}
+  />
+);
+
 export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, githubData }) => {
-  const expPercent = Math.min(100, Math.round((stats.exp / stats.maxExp) * 100));
-  const [notifsEnabled, setNotifsEnabled] = useState<boolean>(() => {
-    return typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted';
-  });
+  const [notifsEnabled, setNotifsEnabled] = useState(
+    typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted'
+  );
 
   const handleToggleNotifications = async () => {
     soundFx.playClick();
@@ -36,275 +155,225 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, githubDat
     if (granted) {
       soundFx.playChirp();
       sendCritterNotification(
-        '🐾 Commit Critter Alert Active!',
-        `Your ${stats.stage} will notify you if you forget to commit for 3 days!`
+        '🐾 Commit Critter alerts active!',
+        `Your ${stats.stage} critter will ping you if you stop committing for 3 days.`
       );
     }
   };
 
-  // Generate 16 weeks of contribution squares (16 cols x 7 rows = 112 days)
-  const heatmapSquares = Array.from({ length: 112 }).map((_, i) => {
+  // Build 16 weeks × 7 days heatmap (112 cells)
+  const heatCells = Array.from({ length: 112 }, (_, i) => {
     const daysFromEnd = 111 - i;
-    const isStreakDay = daysFromEnd < githubData.streakDays;
-    const hasRecentCommit = daysFromEnd < Math.min(githubData.totalRecentCommits, 25) && (i % 2 === 0 || isStreakDay);
-    
-    let levelClass = 'bg-slate-800/80';
-    if (isStreakDay) {
-      levelClass = 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]';
-    } else if (hasRecentCommit) {
-      levelClass = i % 3 === 0 ? 'bg-emerald-600' : 'bg-emerald-700/80';
-    }
-    return { id: i, levelClass, daysFromEnd };
+    const isStreak = daysFromEnd < githubData.streakDays;
+    const isActive = !isStreak && daysFromEnd < Math.min(githubData.totalRecentCommits * 2, 60) && (i % 3 !== 0);
+    return { id: i, isStreak, isActive };
   });
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-xl">
-      
-      {/* 1. Vitality Meters (Energy, Happiness, Hunger, EXP) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-md">
-        <div className="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-          <div>
-            <h3 className="font-pixel text-xs text-cyan-400 uppercase tracking-wider">
-              {stats.name}
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">{stats.personalityQuirk}</p>
-          </div>
-          <span className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-full text-xs font-mono font-bold">
-            Level {stats.level}
-          </span>
-        </div>
+    <div className="flex flex-col gap-5 w-full max-w-lg animate-fade-up">
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          
-          {/* Energy Bar */}
-          <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800/80">
-            <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
-              <span className="flex items-center gap-1.5 text-amber-300 font-semibold">
-                <Zap className="w-3.5 h-3.5" /> Energy
-              </span>
-              <span className="text-slate-300 font-bold">{stats.energy}%</span>
-            </div>
-            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500 rounded-full"
-                style={{ width: `${stats.energy}%` }}
-              />
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1">
-              {stats.energy > 60 ? 'Active & buzzing!' : 'Tired — push fresh code!'}
+      {/* ── Pet Identity Card ── */}
+      <div className="glass-panel-bright rounded-3xl p-5 riveted">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <p className="font-pixel text-[9px] text-slate-400 uppercase tracking-wider mb-1">
+              Registered Critter
             </p>
+            <h2 className="font-display text-xl font-bold text-white leading-tight">
+              {githubData.name || githubData.username}
+            </h2>
+            <p className="text-xs text-slate-400 font-mono mt-0.5">{stats.personalityQuirk}</p>
           </div>
 
-          {/* Happiness Bar */}
-          <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800/80">
-            <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
-              <span className="flex items-center gap-1.5 text-pink-400 font-semibold">
-                <Smile className="w-3.5 h-3.5" /> Happiness
-              </span>
-              <span className="text-slate-300 font-bold">{stats.happiness}%</span>
-            </div>
-            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-pink-500 to-rose-400 transition-all duration-500 rounded-full"
-                style={{ width: `${stats.happiness}%` }}
-              />
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1">
-              {stats.happiness > 60 ? 'Loved & content' : 'Needs attention or commits'}
-            </p>
-          </div>
-
-        </div>
-
-        {/* Level Progression EXP Bar */}
-        <div className="mt-4 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800/80">
-          <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" /> Evolution Progress
-            </span>
-            <span className="text-slate-300 font-bold">
-              {stats.exp} / {stats.maxExp} EXP ({expPercent}%)
-            </span>
-          </div>
-          <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 rounded-full"
-              style={{ width: `${expPercent}%` }}
+          {/* Avatar + level pill */}
+          <div className="relative shrink-0">
+            <img
+              src={githubData.avatarUrl}
+              alt={githubData.username}
+              className="w-14 h-14 rounded-2xl object-cover"
+              style={{ border: '2px solid rgba(255,255,255,0.1)' }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  `https://api.dicebear.com/7.x/bottts/svg?seed=${githubData.username}`;
+              }}
             />
-          </div>
-          <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
-            <span>Stage: {stats.stage}</span>
-            <span>Element: {stats.element}</span>
+            <span
+              className="absolute -bottom-1.5 -right-1.5 font-pixel text-[8px] px-1.5 py-0.5 rounded-lg text-white"
+              style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}
+            >
+              LVL {stats.level}
+            </span>
           </div>
         </div>
 
+        {/* GitHub link + notification toggle */}
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
+          <a
+            href={`https://github.com/${githubData.username}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white transition-colors"
+          >
+            <ExternalLink className="w-3 h-3 text-cyan-400" />
+            @{githubData.username}
+          </a>
+          <button
+            onClick={handleToggleNotifications}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-mono border transition-all ${
+              notifsEnabled
+                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-400'
+                : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-white'
+            }`}
+          >
+            {notifsEnabled
+              ? <BellRing className="w-3 h-3 animate-bounce" />
+              : <Bell className="w-3 h-3" />
+            }
+            {notifsEnabled ? 'Alerts On' : 'Enable Alerts'}
+          </button>
+        </div>
       </div>
 
-      {/* 2. GitHub Activity & Streak Overview */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-md">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-pixel text-xs text-slate-300 uppercase tracking-wider">
-            GitHub Habit Metrics
-          </h3>
-          <div className="flex items-center gap-3">
-            {/* Notification Alert Toggle */}
-            <button
-              onClick={handleToggleNotifications}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-mono border transition-all ${
-                notifsEnabled
-                  ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 shadow-sm'
-                  : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-white'
-              }`}
-              title="Toggle Browser Pet Misses You Notifications"
-            >
-              {notifsEnabled ? <BellRing className="w-3 h-3 text-emerald-400 animate-bounce" /> : <Bell className="w-3 h-3" />}
-              <span>{notifsEnabled ? 'Alerts On' : 'Enable Alerts'}</span>
-            </button>
+      {/* ── ECG Vitals ── */}
+      <div className="grid grid-cols-1 gap-4">
+        <EcgVital
+          label="⚡ Energy"
+          value={stats.energy}
+          subtext={stats.energy > 60 ? 'Active & buzzing — recent commits detected' : 'Signal weak — push fresh code to restore power'}
+          strokeColor="#eab308"
+          bgGlow="linear-gradient(135deg, rgba(234,179,8,0.3), transparent)"
+        />
+        <EcgVital
+          label="🖤 Happiness"
+          value={stats.happiness}
+          subtext={stats.happiness > 60 ? 'Content and purring — streak is strong' : 'Needs attention or a fresh commit snack'}
+          strokeColor="#ec4899"
+          bgGlow="linear-gradient(135deg, rgba(236,72,153,0.3), transparent)"
+        />
+      </div>
 
-            <a
-              href={`https://github.com/${githubData.username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 text-xs flex items-center gap-1 lowercase font-mono"
-            >
-              @{githubData.username} <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
+      {/* ── Stat Hex Tiles ── */}
+      <div className="flex items-stretch gap-3 overflow-x-auto pb-1">
+        <StatHex icon={<Flame className="w-5 h-5" />}     label="Streak"   value={`${githubData.streakDays}d`}  accent="#f97316" />
+        <StatHex icon={<GitCommit className="w-5 h-5" />}  label="Commits"  value={`${githubData.totalRecentCommits}`} accent="#22c55e" />
+        <StatHex icon={<Code2 className="w-5 h-5" />}      label="Top Lang" value={githubData.primaryLanguage.slice(0, 4)} accent="#38bdf8" />
+        <StatHex icon={<Clock className="w-5 h-5" />}      label="Rhythm"   value={githubData.isNightOwl ? 'Nite' : 'Day'} accent="#a78bfa" />
+      </div>
+
+      {/* ── Language DNA Bar ── */}
+      <div className="glass-panel rounded-2xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="font-pixel text-[9px] text-slate-300 uppercase tracking-wider">
+            Elemental DNA
+          </p>
+          <span className="text-[11px] font-mono text-slate-400">{githubData.primaryLanguage} dominant</span>
         </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          
-          <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800 text-center">
-            <Flame className="w-5 h-5 text-orange-400 mx-auto mb-1" />
-            <div className="text-lg font-bold font-mono text-white">{githubData.streakDays}d</div>
-            <div className="text-[10px] text-slate-400 uppercase font-pixel">Streak</div>
-          </div>
-
-          <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800 text-center">
-            <GitCommit className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
-            <div className="text-lg font-bold font-mono text-white">{githubData.totalRecentCommits}</div>
-            <div className="text-[10px] text-slate-400 uppercase font-pixel">Commits</div>
-          </div>
-
-          <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800 text-center">
-            <Code2 className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-            <div className="text-sm font-bold font-mono text-white truncate">{githubData.primaryLanguage}</div>
-            <div className="text-[10px] text-slate-400 uppercase font-pixel">Main Lang</div>
-          </div>
-
-          <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800 text-center">
-            <Clock className="w-5 h-5 text-purple-400 mx-auto mb-1" />
-            <div className="text-xs font-bold font-mono text-white mt-1">
-              {githubData.isNightOwl ? 'Night Owl' : 'Day Hacker'}
+        {/* Stacked bar */}
+        <div className="h-2 w-full rounded-full overflow-hidden flex gap-px mb-3">
+          {githubData.languages.map((lang) => (
+            <div
+              key={lang.name}
+              style={{ width: `${lang.percentage}%`, background: lang.color }}
+              title={`${lang.name} ${lang.percentage}%`}
+              className="h-full transition-all"
+            />
+          ))}
+        </div>
+        {/* Legend */}
+        <div className="flex flex-wrap gap-3">
+          {githubData.languages.map((lang) => (
+            <div key={lang.name} className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: lang.color }} />
+              {lang.name}
+              <span className="text-slate-500">({lang.percentage}%)</span>
             </div>
-            <div className="text-[10px] text-slate-400 uppercase font-pixel">Rhythm</div>
-          </div>
-
+          ))}
         </div>
+      </div>
 
-        {/* Mini Contribution Heatmap */}
-        <div className="mb-6 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-300 font-semibold mb-3">
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Contribution Heatmap (16 Weeks)</span>
-            </span>
-            <span className="text-[11px] text-emerald-400 font-bold">
-              {githubData.streakDays} Day Active Streak
-            </span>
+      {/* ── Contribution Heatmap ── */}
+      <div className="glass-panel rounded-2xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+            <p className="font-pixel text-[9px] text-slate-300 uppercase tracking-wider">
+              Contribution Map
+            </p>
           </div>
-          
-          <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto py-1">
-            {heatmapSquares.map((sq) => (
-              <div
-                key={sq.id}
-                className={`w-2.5 h-2.5 rounded-sm transition-all hover:scale-125 ${sq.levelClass}`}
-                title={sq.daysFromEnd < githubData.streakDays ? `Active streak day!` : undefined}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-2 pt-2 border-t border-slate-800/80">
-            <span>Less</span>
-            <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-sm bg-slate-800" />
-              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-800" />
-              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-600" />
-              <div className="w-2.5 h-2.5 rounded-sm bg-emerald-400" />
-            </div>
-            <span>More Activity</span>
-          </div>
-        </div>
-
-        {/* Language Breakdown */}
-        <div className="mb-6">
-          <div className="text-xs font-mono text-slate-300 font-semibold mb-2 flex items-center justify-between">
-            <span>Elemental Language DNA</span>
-            <span className="text-[11px] text-slate-400">{githubData.primaryLanguage} Dominant</span>
-          </div>
-          <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden flex">
-            {githubData.languages.map((lang) => (
-              <div
-                key={lang.name}
-                style={{ width: `${lang.percentage}%`, backgroundColor: lang.color }}
-                title={`${lang.name}: ${lang.percentage}%`}
-                className="h-full transition-all"
-              />
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3 mt-2.5">
-            {githubData.languages.map((lang) => (
-              <div key={lang.name} className="flex items-center gap-1.5 text-xs text-slate-300 font-mono">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: lang.color }} />
-                <span>{lang.name}</span>
-                <span className="text-slate-400">({lang.percentage}%)</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Badges / Traits */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-800/80">
-          {githubData.isNightOwl && (
-            <span className="px-2.5 py-1 rounded-full bg-purple-900/30 border border-purple-500/40 text-purple-300 text-[11px] font-mono flex items-center gap-1">
-              <Moon className="w-3 h-3" /> Midnight Committer
-            </span>
-          )}
-          {githubData.isWeekendWarrior && (
-            <span className="px-2.5 py-1 rounded-full bg-red-900/30 border border-red-500/40 text-red-300 text-[11px] font-mono flex items-center gap-1">
-              <Swords className="w-3 h-3" /> Weekend Warrior
-            </span>
-          )}
-          {githubData.streakDays >= 7 && (
-            <span className="px-2.5 py-1 rounded-full bg-amber-900/30 border border-amber-500/40 text-amber-300 text-[11px] font-mono flex items-center gap-1">
-              <Flame className="w-3 h-3" /> 7+ Day Streak Club
-            </span>
-          )}
-          <span className="px-2.5 py-1 rounded-full bg-cyan-900/30 border border-cyan-500/40 text-cyan-300 text-[11px] font-mono">
-            {githubData.publicRepos} Public Repos
+          <span className="font-mono text-[11px] text-emerald-400 font-semibold">
+            {githubData.streakDays}d streak
           </span>
         </div>
-
+        <div
+          className="grid gap-1 overflow-x-auto"
+          style={{
+            display: 'grid',
+            gridTemplateRows: 'repeat(7, 10px)',
+            gridAutoFlow: 'column',
+            width: 'max-content',
+          }}
+        >
+          {heatCells.map((c) => (
+            <HeatCell key={c.id} active={c.isActive} streak={c.isStreak} />
+          ))}
+        </div>
+        {/* Legend */}
+        <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 mt-2.5">
+          <span>Less</span>
+          <div className="flex gap-1">
+            {['rgba(255,255,255,0.05)', '#14532d', '#16a34a', '#22c55e'].map((bg, i) => (
+              <div key={i} className="w-2.5 h-2.5 rounded-sm" style={{ background: bg }} />
+            ))}
+          </div>
+          <span>More</span>
+        </div>
       </div>
 
-      {/* 3. Recent Commit Log */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-md">
-        <h3 className="font-pixel text-xs text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <GitCommit className="w-4 h-4 text-cyan-400" />
-          <span>Recent Activity Feed</span>
-        </h3>
-        
-        <div className="flex flex-col gap-2.5 max-h-56 overflow-y-auto pr-1">
+      {/* ── Trait Badges ── */}
+      <div className="flex flex-wrap gap-2">
+        {githubData.isNightOwl && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full glass-panel text-[11px] font-mono text-violet-300">
+            <Moon className="w-3 h-3" /> Midnight Coder
+          </span>
+        )}
+        {githubData.isWeekendWarrior && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full glass-panel text-[11px] font-mono text-red-300">
+            <Swords className="w-3 h-3" /> Weekend Warrior
+          </span>
+        )}
+        {githubData.streakDays >= 7 && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full glass-panel text-[11px] font-mono text-amber-300">
+            <Flame className="w-3 h-3" /> 7+ Day Streak
+          </span>
+        )}
+        {githubData.isRateLimited && (
+          <span className="px-3 py-1 rounded-full glass-panel text-[11px] font-mono text-slate-400">
+            Cached data (API limit)
+          </span>
+        )}
+      </div>
+
+      {/* ── Recent Commits Log ── */}
+      <div className="glass-panel rounded-2xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <GitCommit className="w-3.5 h-3.5 text-cyan-400" />
+          <p className="font-pixel text-[9px] text-slate-300 uppercase tracking-wider">
+            Activity Log
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
           {githubData.recentCommits.map((c) => (
-            <div 
-              key={c.id} 
-              className="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 flex items-start justify-between gap-3 text-xs font-mono hover:border-slate-700 transition-colors"
+            <div
+              key={c.id}
+              className="glass-panel rounded-xl px-3 py-2.5 flex items-start justify-between gap-3 text-xs font-mono hover:border-white/[0.1] transition-colors group"
             >
               <div className="flex flex-col gap-0.5 overflow-hidden">
-                <span className="text-cyan-300 font-bold truncate">{c.repo}</span>
+                <span className="text-cyan-300 font-semibold truncate group-hover:text-cyan-200 transition-colors">
+                  {c.repo}
+                </span>
                 <span className="text-slate-300 truncate">{c.message}</span>
               </div>
-              <span className="text-[10px] text-slate-400 whitespace-nowrap pt-0.5">{c.date}</span>
+              <span className="text-[10px] text-slate-500 shrink-0 pt-0.5">{c.date}</span>
             </div>
           ))}
         </div>
