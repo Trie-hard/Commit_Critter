@@ -1,0 +1,25 @@
+Commit_Critter
+
+A virtual pet that lives in the browser and reacts to your real GitHub commit history — it perks up when you commit, droops if you go quiet for a few days, and evolves as your streak and total activity grow.
+
+Why this wins the "Best Web/App Experience" prize specifically:
+
+Functionality — it's not a static UI. You're pulling live data (GitHub's public REST API, no auth needed for public repos), transforming commit history into "stats" (streak, frequency, language diversity), and driving an animation/state machine off that.
+Usability — onboarding is one text field: type a GitHub username, done. No signup, no friction, instant payoff.
+Presentation — it's inherently charming and demo-friendly, and it's a clever meta nod to a hackathon literally called First Commit. Judges notice thematic cleverness — it signals you actually read the brief.
+
+Core features (scoped for a solo build):
+
+Pixel-art or simple SVG creature with idle animations (breathing/blinking loop)
+Stats derived from commit data: Energy (recent activity), Happiness (streak), Growth stage (total commits)
+Celebration animation on fresh activity, "napping" state after inactivity
+A "sandbox/demo mode" with a button to simulate commits — critical, because your real growth happens over days and you need to show the full arc in a 3–5 min video
+A shareable canvas-rendered "Pet Card" PNG (stats snapshot, downloadable) — nice bonus visual, Spotify-Wrapped-style
+
+Stretch goals to flex technical range (good "Learning & Growth" material too):
+
+Make it an installable PWA with a service worker (offline-capable, "Add to Home Screen")
+Browser notifications ("Your critter misses you — 3 days since your last commit")
+Swap CSS keyframes for a proper Lottie/Rive animation if you want polished character motion
+
+Suggested stack: React or Svelte (Svelte if you want to learn something new), GitHub REST API, Canvas API for the share-card, localStorage/IndexedDB for persistence.

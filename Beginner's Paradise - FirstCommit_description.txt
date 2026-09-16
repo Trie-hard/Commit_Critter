@@ -1,0 +1,307 @@
+Beginner's Paradise - FirstCommit
+Your first project. Your first commit. Your future.
+
+ Submission Requirements
+
+To complete your submission, each team or individual must submit the following on Devpost before the deadline:
+Required
+
+    A working project created during the hackathon.
+
+    A public GitHub repository containing your source code.
+
+    A project description explaining what you built, how it works, and the problem it solves.
+
+    A demo video (3–5 minutes) showcasing your project and its main features.
+
+    Clear setup instructions (README) so judges can run your project if necessary.
+
+Recommended
+
+    A live deployment or hosted version of your project.
+
+    Screenshots or images of your project.
+
+    A list of technologies, frameworks, APIs, or libraries used.
+
+    Any presentation slides or additional documentation.
+
+Rules
+
+    Your project should be started during the hackathon. Existing libraries, templates, and frameworks are allowed, but the core work must be completed during the event.
+
+    Projects may be built individually or in teams (within the allowed team size).
+
+    You must own or have permission to use all assets included in your submission.
+
+    AI tools may be used unless a specific prize category states otherwise. Please disclose any significant AI assistance in your project description.
+
+    Incomplete, non-functional, or plagiarized submissions may be disqualified.
+
+Most importantly, don't worry if your project isn't perfect. First Commit is about learning, building, and taking the next step in your development journey.
+Requirements
+Submission Requirements
+
+To be eligible for judging, your project must meet the following requirements.
+What You Can Build
+
+You're free to build web applications, mobile apps, desktop applications, games, hardware projects, AI-powered tools, or any other software-related project. There is no required theme—build something you're passionate about.
+AI Usage
+
+AI tools are allowed and encouraged as learning aids. Use them to help you learn, brainstorm, debug, or improve your project—but they should support your work, not replace it. Judges will value your understanding, creativity, and problem-solving more than AI-generated code.
+What to Submit
+
+Your Devpost submission must include:
+
+    A clear project description explaining:
+
+        What you built
+
+        The problem it solves
+
+        Who it's for
+
+    A link to a public GitHub repository containing your source code.
+
+    A demo presentation (recommended: 3–5 minutes) that includes:
+
+        A live demonstration of your project
+
+        How it works
+
+        The technologies you used
+
+        Challenges you overcame
+
+        What you learned during the hackathon
+
+    A README with setup instructions so judges can run your project if necessary.
+
+Judging Criteria
+
+At First Commit, we believe learning is more important than perfection. Projects will primarily be judged on:
+
+    Learning & Growth – What did you learn? How much did you challenge yourself?
+
+    Creativity – Is your idea original or does it solve a problem in an interesting way?
+
+    Execution – Does your project work as intended?
+
+    Technical Understanding – Can you clearly explain how your project works and the decisions you made?
+
+    Presentation – How effectively do you communicate your project and your journey?
+
+You do not need years of experience to win. Whether this is your first project or your first hackathon, what matters most is your willingness to learn, build, and share your journey.
+
+
+
+Prizes
+$880+ in prizes
++ other prizes
+Beginner's Paradise - Champion
+$220 in cash
+1 winner
+
+The highest honor at First Commit. Awarded to the project that demonstrates the strongest combination of creativity, execution, technical achievement, and learning.
+
+1 year .xyz domain - $20 value
+2 year DevSwarm Subscription - $200 value
+
+Renewal after the first year is the responsibility of the domain owner.
+Most Ambitious Project
+$220 in cash
+1 winner
+
+For the team or individual who dared to tackle the biggest challenge and pushed their project furthest.
+
+1 Year .xyz domain - $20 value
+1 Year DevSwarm Subscription - $100 value
+
+Renewal after the first year is the responsibility of the domain owner.
+Most Creative Idea
+$120 in cash
+1 winner
+
+For the project with the most original, unexpected, or imaginative concept.
+
+1 Year .XYZ Domain - $20 value
+1 Year DevSwarm Subscription - $100 value
+
+Renewal after the first year is the responsibility of the domain owner.
+Best Web/App Experience - Certificate
+$120 in cash
+1 winner
+
+For the project that delivers an outstanding experience on the web, combining great functionality, usability, and presentation.
+
+1 year .XYZ domain - $20 Value
+1 year DevSwarm subscription - $100 value
+
+Renewal after the first year is the responsibility of the domain owner.
+Best Design - Certificate
+$120 in cash
+1 winner
+
+For exceptional visual design, user interface, branding, and attention to detail.
+
+1 year .xyz domain - $20 Value
+1 Year DevSwarm subscription - $100 value
+
+Renewal after the first year is the responsibility of the domain owner.
+Best Technical Achievement - .xyz domain & Certificate
+$20 in cash
+1 winner
+
+For the project that demonstrates impressive technical problem-solving, engineering, or implementation.
+
+Renewal after the first year is the responsibility of the domain owner.
+Biggest Learning Journey - .xyz & Certificate
+$20 in cash
+1 winner
+
+For the participant or team that shows the most impressive growth, experimentation, and learning throughout the hackathon.
+
+Renewal after the first year is the responsibility of the domain owner.
+Most Polished Project - Certficate & .xyz domain
+$20 in cash
+1 winner
+
+For the project that goes beyond the prototype and delivers an especially complete, refined, and usable experience.
+
+Renewal after the first year is the responsibility of the domain owner.
+Community Loved - Certificate & .xyz domain
+$20 in cash
+1 winner
+
+Awarded to the project that receives the most support from the First Commit community.
+
+1 Year .XYZ Domain - $20 Value
+
+Renewal after the first year is the responsibility of the domain owner.
+
+
+Judging Criteria
+
+    Learning & Growth — 30%
+    How much did you learn and improve during the hackathon? Progress throughout the event Challenges overcome New skills developed Understanding of your own project
+    Creativity & Impact — 25%
+    How original and meaningful is your idea? Problem being solved Innovation Usefulness to users
+    Technical Execution — 25%
+    How well is the project built? Functionality Code quality Technical decisions Effective use of tools and technologies
+    Presentation & Communication — 20%
+    How clearly can you explain your project? Demo quality Explaining your process Showing what you learned Clear documentation
+
+Resources
+
+Welcome to the First Commit resource hub! These resources are here to help you learn, build, and successfully complete your first hackathon project.
+Getting Started Git & GitHub
+
+Learn how to manage your code, collaborate with teammates, and show your progress through commits.
+
+    GitHub Beginner Guide: https://docs.github.com/en/get-started
+
+    GitHub Skills: https://skills.github.com/
+
+    Git & GitHub Tutorial: https://www.youtube.com/github
+
+Programming Fundamentals
+
+New to coding? Start here:
+
+    freeCodeCamp: https://www.freecodecamp.org/
+
+    The Odin Project: https://www.theodinproject.com/
+
+    W3Schools: https://www.w3schools.com/
+
+Building Your First Project Web Development
+
+Resources for building websites and web apps:
+
+    HTML, CSS, JavaScript learning: https://developer.mozilla.org/
+
+    React Documentation: https://react.dev/
+
+    Next.js Documentation: https://nextjs.org/docs
+
+Mobile Development
+
+    React Native Documentation: https://reactnative.dev/
+
+    Expo Documentation: https://docs.expo.dev/
+
+Backend & APIs
+
+    Firebase Documentation: https://firebase.google.com/docs
+
+    Supabase Documentation: https://supabase.com/docs
+
+Design Resources
+
+Create better-looking and more user-friendly projects:
+
+    Figma: https://www.figma.com/
+
+    Google Fonts: https://fonts.google.com/
+
+    Font Awesome Icons: https://fontawesome.com/
+
+AI Resources
+
+AI tools can be used as learning assistants during First Commit.
+
+Recommended uses:
+
+    Understanding concepts.
+
+    Debugging errors.
+
+    Brainstorming ideas.
+
+    Learning new technologies.
+
+Remember: AI should support your learning, not replace your work.
+Deployment & Hosting
+
+Share your project with the world:
+
+    GitHub Pages: https://pages.github.com/
+
+    Vercel: https://vercel.com/
+
+    Netlify: https://www.netlify.com/
+
+Community & Support
+
+Need help? Use these resources:
+
+    Official First Commit Discord: Soon
+
+    Mentor Help Channels: Email me - Harshil Arora
+
+    Workshop Schedule: Soon
+
+    FAQ: Here
+
+Project Inspiration
+
+Need ideas?
+
+Try building:
+
+    A tool that solves a problem you experience.
+
+    An app that helps your community.
+
+    A game or interactive experience.
+
+    A productivity tool.
+
+    An AI-powered assistant.
+
+    A hardware or IoT project.
+
+Remember: Your first project does not need to be perfect. The goal of First Commit is to learn, build, and take your first step as a developer.
+
+If you need ANY support at all, you can checkout the discord server or email us and I'll be happy to help you out. Happy Hacking!
+
