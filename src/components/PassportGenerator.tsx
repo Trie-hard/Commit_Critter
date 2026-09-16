@@ -26,59 +26,42 @@ export const PassportGenerator: React.FC<PassportGeneratorProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // High-Resolution 1200 x 630 (Standard Twitter/Social OpenGraph size)
+    // High-Resolution 1200 x 630 (Standard Twitter/Social OpenGraph format)
     canvas.width = 1200;
     canvas.height = 630;
 
-    // 1. Dark Cyberpunk Background with Radial Glow
-    const bgGradient = ctx.createLinearGradient(0, 0, 1200, 630);
-    bgGradient.addColorStop(0, '#0a0d14');
-    bgGradient.addColorStop(0.5, '#111827');
-    bgGradient.addColorStop(1, '#05070c');
-    ctx.fillStyle = bgGradient;
+    // 1. Warm Paper White Canvas (#fafafb & #ffffff)
+    ctx.fillStyle = '#fafafb';
     ctx.fillRect(0, 0, 1200, 630);
 
-    // Neon Accent Glow Circles
-    const glow1 = ctx.createRadialGradient(1000, 150, 10, 1000, 150, 450);
-    glow1.addColorStop(0, 'rgba(0, 240, 255, 0.18)');
-    glow1.addColorStop(1, 'transparent');
-    ctx.fillStyle = glow1;
-    ctx.fillRect(0, 0, 1200, 630);
-
-    const glow2 = ctx.createRadialGradient(200, 500, 10, 200, 500, 400);
-    glow2.addColorStop(0, 'rgba(255, 0, 127, 0.15)');
-    glow2.addColorStop(1, 'transparent');
-    ctx.fillStyle = glow2;
-    ctx.fillRect(0, 0, 1200, 630);
-
-    // 2. Holographic Card Border
-    ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(30, 30, 1140, 570);
-
-    ctx.strokeStyle = '#ff007f';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(40, 40, 1120, 550);
-
-    // 3. Header Branding
-    ctx.font = 'bold 20px "Courier New", monospace';
-    ctx.fillStyle = '#00f0ff';
-    ctx.fillText('OFFICIAL DIGITAL PET REGISTRY // FIRST COMMIT HACKATHON 2026', 70, 85);
-
-    ctx.font = 'bold 44px "Arial Black", sans-serif';
+    // Inner White Card with Hairline Border
     ctx.fillStyle = '#ffffff';
-    ctx.fillText('COMMIT CRITTER PASSPORT', 70, 140);
+    ctx.beginPath();
+    ctx.roundRect(36, 36, 1128, 558, 24);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
-    // 4. Critter Portrait & Character Frame
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(70, 180, 320, 320);
-    ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(70, 180, 320, 320);
+    // 2. Top Header & Typography (Newsreader / Georgia serif)
+    ctx.fillStyle = '#777b86';
+    ctx.font = '500 13px "Plus Jakarta Sans", "Inter", sans-serif';
+    ctx.fillText('OFFICIAL DIGITAL PET REGISTRY · FIRSTCOMMIT HACKATHON 2026', 72, 86);
 
-    // Draw Elemental Stamp Symbol
-    ctx.font = '80px sans-serif';
-    ctx.textAlign = 'center';
+    ctx.fillStyle = '#17191c';
+    ctx.font = 'normal 44px "Newsreader", Georgia, serif';
+    ctx.fillText('Commit Critter Passport', 72, 138);
+
+    // 3. Critter Character Frame — Blush Peach Accent (#fbe1d1) with Sienna Ink (#5d2a1a)
+    ctx.fillStyle = '#fbe1d1';
+    ctx.beginPath();
+    ctx.roundRect(72, 172, 320, 360, 20);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(93, 42, 26, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Elemental Icon Stamp
     let critterSymbol = '🐾';
     if (stats.element === 'FLORA') critterSymbol = '🌱';
     if (stats.element === 'VOLT') critterSymbol = '⚡';
@@ -86,61 +69,66 @@ export const PassportGenerator: React.FC<PassportGeneratorProps> = ({
     if (stats.element === 'TIDAL') critterSymbol = '🌊';
     if (stats.element === 'PRISM') critterSymbol = '💎';
     if (stats.element === 'VOID') critterSymbol = '🌌';
-    ctx.fillText(critterSymbol, 230, 350);
 
-    // Stage & Element banner
-    ctx.font = 'bold 20px "Courier New", monospace';
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`${stats.stage} • ${stats.element}`, 230, 450);
+    ctx.font = '88px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(critterSymbol, 232, 335);
 
-    // 5. User Details & Bio
+    // Stage & Element tag in peach card
+    ctx.font = '500 16px "Plus Jakarta Sans", "Inter", sans-serif';
+    ctx.fillStyle = '#5d2a1a';
+    ctx.fillText(`${stats.stage} · ${stats.element}`, 232, 435);
+
+    ctx.font = 'normal 13px "Plus Jakarta Sans", "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(93, 42, 26, 0.7)';
+    ctx.fillText(`LVL ${stats.level} COMPANION`, 232, 465);
+
+    // 4. User Details
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px sans-serif';
-    ctx.fillText(githubData.name || githubData.username, 430, 220);
+    ctx.fillStyle = '#17191c';
+    ctx.font = 'normal 34px "Newsreader", Georgia, serif';
+    ctx.fillText(githubData.name || githubData.username, 428, 214);
 
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '22px "Courier New", monospace';
-    ctx.fillText(`@${githubData.username} | ${stats.title}`, 430, 260);
+    ctx.fillStyle = '#777b86';
+    ctx.font = '15px "Plus Jakarta Sans", "Inter", sans-serif';
+    ctx.fillText(`@${githubData.username} · ${stats.title}`, 428, 246);
 
-    // Quirk Box
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(430, 290, 680, 70);
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(430, 290, 680, 70);
+    // Personality Quirk Card (Mist Gray)
+    ctx.fillStyle = '#f2f2f3';
+    ctx.beginPath();
+    ctx.roundRect(428, 272, 696, 72, 16);
+    ctx.fill();
 
-    ctx.fillStyle = '#facc15';
-    ctx.font = 'italic 18px sans-serif';
-    ctx.fillText(`"${stats.personalityQuirk}"`, 450, 335);
+    ctx.fillStyle = '#17191c';
+    ctx.font = 'italic 17px "Newsreader", Georgia, serif';
+    ctx.fillText(`"${stats.personalityQuirk}"`, 452, 316);
 
-    // 6. Vital Stats Quad-Grid
-    const statBox = (label: string, value: string, x: number, y: number, color: string) => {
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(x, y, 160, 95);
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(x, y, 160, 95);
+    // 5. Vital Metric Tiles
+    const statBox = (label: string, value: string, x: number, y: number) => {
+      ctx.fillStyle = '#f2f2f3';
+      ctx.beginPath();
+      ctx.roundRect(x, y, 162, 92, 16);
+      ctx.fill();
 
-      ctx.font = 'bold 13px "Courier New", monospace';
-      ctx.fillStyle = '#94a3b8';
-      ctx.fillText(label, x + 15, y + 30);
+      ctx.font = '500 11px "Plus Jakarta Sans", "Inter", sans-serif';
+      ctx.fillStyle = '#777b86';
+      ctx.fillText(label.toUpperCase(), x + 16, y + 28);
 
-      ctx.font = 'bold 30px sans-serif';
-      ctx.fillStyle = color;
-      ctx.fillText(value, x + 15, y + 72);
+      ctx.font = '600 24px "Plus Jakarta Sans", "Inter", sans-serif';
+      ctx.fillStyle = '#17191c';
+      ctx.fillText(value, x + 16, y + 68);
     };
 
-    statBox('LEVEL', `LVL ${stats.level}`, 430, 385, '#38bdf8');
-    statBox('STREAK', `${githubData.streakDays} Days`, 605, 385, '#f97316');
-    statBox('COMMITS', `${githubData.totalRecentCommits}`, 780, 385, '#10b981');
-    statBox('HAPPINESS', `${stats.happiness}%`, 955, 385, '#ec4899');
+    statBox('Active Streak', `${githubData.streakDays} Days`, 428, 366);
+    statBox('Total Commits', `${githubData.totalRecentCommits}`, 606, 366);
+    statBox('Language DNA', `${githubData.primaryLanguage}`, 784, 366);
+    statBox('Vitality', `${stats.happiness}% Morale`, 962, 366);
 
-    // 7. Footer Hackathon Watermark
-    ctx.font = '14px "Courier New", monospace';
-    ctx.fillStyle = '#64748b';
-    ctx.fillText('VERIFIED PARTICIPANT: BEGINNER\'S PARADISE - FIRSTCOMMIT 2026', 430, 525);
-    ctx.fillText('Built with React, Web Audio & HTML5 Canvas', 430, 550);
+    // 6. Verified Watermark Footer
+    ctx.font = '12px "Plus Jakarta Sans", "Inter", sans-serif';
+    ctx.fillStyle = '#979799';
+    ctx.fillText('VERIFIED PARTICIPANT: BEGINNER\'S PARADISE · FIRSTCOMMIT 2026', 428, 502);
+    ctx.fillText('Crafted with React, HTML5 Canvas, Web Audio API & Steep Design System', 428, 524);
 
     const dataUrl = canvas.toDataURL('image/png');
     setCardUrl(dataUrl);
@@ -162,7 +150,7 @@ export const PassportGenerator: React.FC<PassportGeneratorProps> = ({
       if (navigator.share) {
         await navigator.share({
           title: `${githubData.username}'s Commit Critter`,
-          text: `Check out my Commit Critter! Level ${stats.level} ${stats.stage} with a ${githubData.streakDays}-day streak! 🐾💻`,
+          text: `Check out my Commit Critter! Level ${stats.level} ${stats.stage} with a ${githubData.streakDays}-day streak! 🐾`,
           url: window.location.href,
         });
       } else {
@@ -174,38 +162,47 @@ export const PassportGenerator: React.FC<PassportGeneratorProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-900 border-2 border-cyan-500/50 rounded-3xl p-6 max-w-2xl w-full shadow-2xl flex flex-col gap-5 relative">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 font-sans animate-fade-in">
+      <div className="bg-white border border-black/[0.08] rounded-[28px] p-6 max-w-2xl w-full shadow-modal flex flex-col gap-4 relative animate-slide-up">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-cyan-400" />
-            <h2 className="font-pixel text-sm text-white">Generate Critter Passport</h2>
+        <div className="flex items-center justify-between border-b border-black/[0.06] pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-[#fbe1d1] text-[#5d2a1a] flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="font-serif text-xl font-normal text-ink-black">
+                Editorial Passport Card
+              </h2>
+              <p className="text-xs text-slate-gray">
+                Export an OpenGraph social share card of your pet
+              </p>
+            </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="w-8 h-8 rounded-full border border-black/[0.08] flex items-center justify-center text-slate-gray hover:text-ink-black hover:bg-mist-gray transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Canvas Preview Area */}
-        <div className="flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-4 border border-slate-800 overflow-hidden">
+        <div className="flex flex-col items-center justify-center bg-fog-white rounded-2xl p-4 border border-black/[0.06] overflow-hidden">
           <canvas 
             ref={canvasRef} 
-            className={`max-w-full h-auto rounded-lg shadow-lg ${!isGenerated ? 'hidden' : 'block'}`}
+            className={`max-w-full h-auto rounded-xl shadow-sm ${!isGenerated ? 'hidden' : 'block'}`}
           />
           {!isGenerated && (
             <div className="py-12 flex flex-col items-center text-center gap-3">
-              <span className="text-4xl">📸</span>
-              <p className="font-mono text-xs text-slate-300 max-w-sm">
-                Renders a high-resolution Spotify-Wrapped style passport card of your pet, stats, and achievements!
+              <span className="text-3xl">📸</span>
+              <p className="text-xs text-slate-gray max-w-sm">
+                Generates a 1200×630 editorial stationery card containing your pet's portrait, habit metrics, and stage progress.
               </p>
               <button
                 onClick={generateCard}
-                className="mt-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono font-bold text-xs rounded-xl shadow-lg shadow-cyan-500/20 transition-all hover:scale-105"
+                className="pill-button-primary text-xs py-2 px-6 mt-1"
               >
                 Render High-Res Card
               </button>
@@ -215,20 +212,20 @@ export const PassportGenerator: React.FC<PassportGeneratorProps> = ({
 
         {/* Modal Footer Actions */}
         {isGenerated && (
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-black/[0.06]">
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-mono text-xs font-bold transition-all"
+              className="pill-button-ghost text-xs py-2 px-4 flex items-center gap-1.5"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-3.5 h-3.5" />
               <span>Share</span>
             </button>
             <button
               onClick={handleDownload}
-              className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-mono text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all hover:scale-105"
+              className="pill-button-primary text-xs py-2 px-5 flex items-center gap-1.5"
             >
-              <Download className="w-4 h-4" />
-              <span>Download PNG (1200x630)</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PNG (1200×630)</span>
             </button>
           </div>
         )}

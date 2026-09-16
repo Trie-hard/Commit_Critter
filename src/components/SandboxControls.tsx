@@ -46,20 +46,22 @@ export const SandboxControls: React.FC<SandboxControlsProps> = ({
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none">
-      <div className="pointer-events-auto bg-slate-900/95 border-2 border-cyan-500/40 rounded-3xl shadow-[0_10px_35px_rgba(0,240,255,0.2)] backdrop-blur-xl transition-all overflow-hidden">
+      <div className="pointer-events-auto bg-white/95 border border-black/[0.1] rounded-[28px] shadow-artifact backdrop-blur-md transition-all overflow-hidden">
         
         {/* Header Bar */}
         <div 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between px-5 py-3.5 cursor-pointer hover:bg-slate-800/60 transition-colors select-none"
+          className="flex items-center justify-between px-6 py-3.5 cursor-pointer hover:bg-mist-gray/50 transition-colors select-none"
         >
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-mist-gray text-ink-black flex items-center justify-center">
               <Wrench className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-pixel text-xs text-white">Judge Time Machine & Sandbox</span>
-              <p className="text-[11px] text-slate-400 font-mono">
+              <span className="font-sans font-semibold text-xs text-ink-black uppercase tracking-wider">
+                Judge Sandbox & Time Machine
+              </span>
+              <p className="text-[11px] text-slate-gray font-normal">
                 Simulate commits, streaks & instant evolutions
               </p>
             </div>
@@ -67,116 +69,120 @@ export const SandboxControls: React.FC<SandboxControlsProps> = ({
 
           <div className="flex items-center gap-3">
             {overrides.active && (
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold animate-pulse">
-                Sandbox Overrides Active
+              <span className="px-3 py-0.5 rounded-full bg-[#fbe1d1] text-[#5d2a1a] text-[11px] font-medium border border-[#5d2a1a]/15">
+                Overrides Active
               </span>
             )}
-            <button className="text-slate-400 hover:text-white p-1">
-              {isOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+            <button className="text-slate-gray hover:text-ink-black p-1">
+              {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {/* Collapsible Controls Panel */}
         {isOpen && (
-          <div className="p-5 border-t border-slate-800 flex flex-col gap-4 font-mono text-xs">
+          <div className="p-6 border-t border-black/[0.06] flex flex-col gap-4 font-sans text-xs">
             
             {/* 1. Push Commits & Idle Days */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Simulate Git Commits */}
-              <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-                <div className="flex items-center gap-1.5 text-slate-300 font-bold mb-2">
-                  <Plus className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="bg-mist-gray/70 p-3.5 rounded-2xl border border-black/[0.04]">
+                <div className="flex items-center gap-1.5 text-ink-black font-medium mb-2">
+                  <Plus className="w-3.5 h-3.5 text-emerald-700" />
                   <span>Simulate Git Push:</span>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => onSimulatePush(1)}
-                    className="flex-1 py-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-white hover:bg-black/5 border border-black/[0.08] text-ink-black rounded-xl font-medium transition-all shadow-xs"
                   >
                     +1 Commit
                   </button>
                   <button
                     onClick={() => onSimulatePush(5)}
-                    className="flex-1 py-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-white hover:bg-black/5 border border-black/[0.08] text-ink-black rounded-xl font-medium transition-all shadow-xs"
                   >
                     +5 Commits
                   </button>
                   <button
                     onClick={() => onSimulatePush(20)}
-                    className="flex-1 py-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-ink-black hover:opacity-90 text-white rounded-xl font-medium transition-all shadow-xs"
                   >
-                    +20 🚀
+                    +20 (Level Up)
                   </button>
                 </div>
               </div>
 
-              {/* Simulate Inactivity / Time Forward */}
-              <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-                <div className="flex items-center gap-1.5 text-slate-300 font-bold mb-2">
-                  <FastForward className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Simulate Inactivity (Decay):</span>
+              {/* Simulate Days Idle */}
+              <div className="bg-mist-gray/70 p-3.5 rounded-2xl border border-black/[0.04]">
+                <div className="flex items-center gap-1.5 text-ink-black font-medium mb-2">
+                  <FastForward className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Simulate Days of Inactivity:</span>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => onSimulateDaysIdle(1)}
-                    className="flex-1 py-1.5 bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-white hover:bg-black/5 border border-black/[0.08] text-ink-black rounded-xl font-medium transition-all shadow-xs"
                   >
                     +1 Day
                   </button>
                   <button
                     onClick={() => onSimulateDaysIdle(3)}
-                    className="flex-1 py-1.5 bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-white hover:bg-black/5 border border-black/[0.08] text-ink-black rounded-xl font-medium transition-all shadow-xs"
                   >
-                    +3d (Sleepy)
+                    +3 Days (Droopy)
                   </button>
                   <button
                     onClick={() => onSimulateDaysIdle(7)}
-                    className="flex-1 py-1.5 bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-300 rounded-xl font-bold transition-all"
+                    className="flex-1 py-1.5 bg-[#fee2e2] hover:bg-[#fecaca] border border-[#ef4444]/30 text-[#991b1b] rounded-xl font-medium transition-all shadow-xs"
                   >
-                    +7d (Droopy)
+                    +7 Days (Sleeping)
                   </button>
                 </div>
               </div>
 
             </div>
 
-            {/* 2. Instant Evolution Jump */}
-            <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-slate-300 font-bold">
-                  <Layers className="w-3.5 h-3.5 text-cyan-400" /> Fast-Forward Evolution Stage:
-                </span>
-                <span className="text-[10px] text-slate-400">Trigger instant metamorphosis</span>
+            {/* 2. Force Stage Evolution */}
+            <div className="bg-mist-gray/70 p-3.5 rounded-2xl border border-black/[0.04]">
+              <div className="flex items-center gap-1.5 text-ink-black font-medium mb-2">
+                <Layers className="w-3.5 h-3.5 text-slate-gray" />
+                <span>Instant Evolution Jump:</span>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {STAGES.map((s) => (
+              <div className="grid grid-cols-5 gap-2">
+                {STAGES.map((stg) => (
                   <button
-                    key={s}
-                    onClick={() => onForceStage(s)}
-                    className="px-3 py-1.5 bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-700/50 text-cyan-200 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                    key={stg}
+                    onClick={() => onForceStage(stg)}
+                    className={`py-1.5 rounded-xl border font-medium text-[11px] transition-all ${
+                      overrides.forcedStage === stg
+                        ? 'bg-ink-black text-white border-ink-black shadow-xs'
+                        : 'bg-white text-slate-gray hover:text-ink-black border-black/[0.08]'
+                    }`}
                   >
-                    {s}
+                    {stg}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* 3. Elemental Affinity Swap */}
-            <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-slate-300 font-bold">
-                  <Palette className="w-3.5 h-3.5 text-pink-400" /> Switch Elemental Skin:
-                </span>
-                <span className="text-[10px] text-slate-400">Derived from top language</span>
+            {/* 3. Force Elemental Affinity */}
+            <div className="bg-mist-gray/70 p-3.5 rounded-2xl border border-black/[0.04]">
+              <div className="flex items-center gap-1.5 text-ink-black font-medium mb-2">
+                <Palette className="w-3.5 h-3.5 text-slate-gray" />
+                <span>Force Elemental Affinity:</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {ELEMENTS.map((el) => (
                   <button
                     key={el.key}
                     onClick={() => onForceElement(el.key)}
-                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-slate-200 rounded-xl text-xs flex items-center gap-1.5 transition-all"
+                    className={`py-1.5 px-2.5 rounded-xl border text-left flex items-center gap-1.5 transition-all text-[11px] ${
+                      overrides.forcedElement === el.key
+                        ? 'bg-ink-black text-white border-ink-black shadow-xs'
+                        : 'bg-white text-slate-gray hover:text-ink-black border-black/[0.08]'
+                    }`}
                   >
                     <span>{el.icon}</span>
                     <span className="truncate">{el.label}</span>
@@ -186,15 +192,17 @@ export const SandboxControls: React.FC<SandboxControlsProps> = ({
             </div>
 
             {/* Reset Button */}
-            <div className="flex justify-end pt-1">
-              <button
-                onClick={onReset}
-                className="flex items-center gap-1.5 px-4 py-2 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-700/60 text-rose-200 rounded-xl font-bold transition-all text-xs"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset to Real GitHub Activity</span>
-              </button>
-            </div>
+            {overrides.active && (
+              <div className="flex justify-end pt-1">
+                <button
+                  onClick={onReset}
+                  className="pill-button-ghost text-xs py-1.5 px-4 flex items-center gap-1.5"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Sandbox to Live GitHub Data</span>
+                </button>
+              </div>
+            )}
 
           </div>
         )}

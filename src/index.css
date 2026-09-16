@@ -1,111 +1,220 @@
-/* ── Fonts must be first ── */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Press+Start+2P&family=VT323&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base ── */
-@layer base {
-  *, *::before, *::after { box-sizing: border-box; }
+:root {
+  /* Steep Colors */
+  --color-ink-black: #17191c;
+  --color-paper-white: #ffffff;
+  --color-mist-gray: #f2f2f3;
+  --color-fog-white: #fafafb;
+  --color-slate-gray: #777b86;
+  --color-ash-gray: #979799;
+  --color-smoke-gray: #a3a6af;
+  --color-blush-peach: #fbe1d1;
+  --color-sienna-brown: #5d2a1a;
 
-  html { scroll-behavior: smooth; }
+  /* Typography */
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --section-gap: 80px;
+  --card-padding: 24px;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+  }
 
   body {
-    background-color: #0a0806;
-    color: #cfc3b8;
-    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--color-paper-white);
+    color: var(--color-ink-black);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+    font-feature-settings: "liga" 1, "dlig" 1;
   }
 }
 
-/* ── Surface cards ── */
-.card {
-  background: #1a1612;
-  border: 1px solid #2d271f;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
-  border-radius: 1.25rem;
+/* ──────────────────────────────────────────────────
+   STEEP CARD SURFACES
+   ────────────────────────────────────────────────── */
+
+/* Floating Product Artifact Card — white with hairline border and soft 10% shadow */
+.card-artifact {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 
+    0 0 0 1px rgba(4, 23, 43, 0.04),
+    0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.card-raised {
-  background: #221d18;
-  border: 1px solid #3d3428;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.4);
-  border-radius: 1.25rem;
+/* Neutral Workhorse Card — flat mist gray, soft and quiet */
+.card-neutral {
+  background: #f2f2f3;
+  border-radius: 24px;
+  border: 1px solid transparent;
 }
 
-/* ── Device shell ── */
-.device-shell {
+/* Signature Blush Peach Accent Card — the editorial warmth against monochrome */
+.card-peach {
+  background: #fbe1d1;
+  color: #5d2a1a;
+  border-radius: 24px;
+  border: 1px solid rgba(93, 42, 26, 0.12);
+}
+
+/* ──────────────────────────────────────────────────
+   STEEP BUTTONS & PILLS
+   ────────────────────────────────────────────────── */
+
+/* Primary Pill Button — solid ink black */
+.pill-button-primary {
+  background: #17191c;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.pill-button-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-0.5px);
+}
+.pill-button-primary:active {
+  transform: translateY(0.5px);
+}
+
+/* Ghost Pill Button — transparent with ink border */
+.pill-button-ghost {
+  background: transparent;
+  color: #17191c;
+  border: 1px solid rgba(23, 25, 28, 0.2);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.pill-button-ghost:hover {
+  border-color: #17191c;
+  background: rgba(23, 25, 28, 0.03);
+}
+
+/* Text link with arrow */
+.text-link-arrow {
+  color: #17191c;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.2s ease;
+}
+.text-link-arrow:hover {
+  gap: 7px;
+  text-decoration: underline;
+}
+
+/* ──────────────────────────────────────────────────
+   DEVICE CASING & HARDWARE SHELL
+   ────────────────────────────────────────────────── */
+.designer-device-shell {
+  border-radius: 36px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow:
-    0 24px 80px rgba(0,0,0,0.7),
-    0 4px 16px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 16px 40px -10px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Stat bar ── */
-.stat-bar-track {
-  background: #2d271f;
-  border-radius: 99px;
+/* ──────────────────────────────────────────────────
+   STAT BARS
+   ────────────────────────────────────────────────── */
+.stat-bar-track-light {
+  background: #f2f2f3;
+  border-radius: 9999px;
   height: 6px;
   overflow: hidden;
 }
 
-.stat-bar-fill {
+.stat-bar-fill-light {
   height: 100%;
-  border-radius: 99px;
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 9999px;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Ticker ── */
+/* ──────────────────────────────────────────────────
+   COMMIT TICKER
+   ────────────────────────────────────────────────── */
 .ticker-track {
   display: flex;
   width: max-content;
-  animation: tickerScroll 30s linear infinite;
+  animation: tickerScroll 36s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
 }
 
-.ticker-track:hover { animation-play-state: paused; }
-
-/* ── CRT scanlines (optional shell effect) ── */
+/* ──────────────────────────────────────────────────
+   CRT SCANLINES (Optional)
+   ────────────────────────────────────────────────── */
 .scanlines::after {
   content: '';
   display: block;
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%);
+  background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%);
   background-size: 100% 3px;
   pointer-events: none;
   z-index: 10;
 }
 
-/* ── Pixel LCD ── */
-.pixel-lcd-bg {
-  background-color: #9bbc0f;
-  background-image:
-    radial-gradient(#8bac0f 15%, transparent 16%),
-    radial-gradient(#8bac0f 15%, transparent 16%);
-  background-size: 8px 8px;
-  background-position: 0 0, 4px 4px;
+/* ──────────────────────────────────────────────────
+   SCROLLBAR & SELECTION
+   ────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fafafb;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8d8dc;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5b5bc;
 }
 
-.warm-lcd-bg {
-  background: radial-gradient(ellipse at 50% 30%, #1a1410 0%, #0d0a08 100%);
-}
-
-/* ── Scrollbars ── */
-::-webkit-scrollbar       { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #120f0c; }
-::-webkit-scrollbar-thumb { background: #3d3428; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #5a5044; }
-
-/* ── Selection ── */
 ::selection {
-  background: rgba(232, 115, 58, 0.25);
-  color: #f0e6da;
-}
-
-/* ── Focus ring ── */
-:focus-visible {
-  outline: 2px solid #e8733a;
-  outline-offset: 2px;
+  background: #fbe1d1;
+  color: #5d2a1a;
 }

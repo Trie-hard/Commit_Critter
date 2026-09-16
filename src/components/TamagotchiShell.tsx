@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ShellTheme, CritterStats } from '../types/critter';
 import { CritterSprite } from './CritterSprite';
 import { soundFx } from '../services/audioEngine';
-import { Heart, Utensils, Sparkles, Sun, Moon, BatteryMedium } from 'lucide-react';
+import { Heart, Utensils, Sparkles, Sun, Moon, BatteryCharging } from 'lucide-react';
 
 interface TamagotchiShellProps {
   stats: CritterStats;
@@ -13,41 +13,46 @@ interface TamagotchiShellProps {
   onSelectTheme: (theme: ShellTheme) => void;
 }
 
-// Shell body colors — warm and varied, not neon
+// Minimal, elegant hardware finishes inspired by industrial product design
 const SHELL_STYLES: Record<ShellTheme, {
   label: string;
   body: string;
-  bodyBottom: string;
-  buttonRing: string;
   screenBg: string;
+  accent: string;
+  buttonFill: string;
+  buttonText: string;
 }> = {
   GAMEBOY: {
-    label: 'DMG-01',
-    body: '#c4c2ba',
-    bodyBottom: '#aeaca4',
-    buttonRing: '#9e2261',
+    label: 'DMG Classic',
+    body: '#e8e6df',
     screenBg: '#8fae1b',
+    accent: '#8f2d56',
+    buttonFill: '#8f2d56',
+    buttonText: '#ffffff',
   },
   CYBER: {
-    label: 'Midnight',
-    body: '#1e1a26',
-    bodyBottom: '#161320',
-    buttonRing: '#5a4f8c',
-    screenBg: '#0d0a14',
+    label: 'Paper White',
+    body: '#ffffff',
+    screenBg: '#f8f8fa',
+    accent: '#17191c',
+    buttonFill: '#17191c',
+    buttonText: '#ffffff',
   },
   SAKURA: {
-    label: 'Sakura',
-    body: '#f0c4ce',
-    bodyBottom: '#e4b0bc',
-    buttonRing: '#c45870',
-    screenBg: '#fef0f3',
+    label: 'Blush Peach',
+    body: '#fbe1d1',
+    screenBg: '#fffbf8',
+    accent: '#5d2a1a',
+    buttonFill: '#5d2a1a',
+    buttonText: '#fbe1d1',
   },
   ATOMIC_PURPLE: {
-    label: 'Grape',
-    body: '#3a2060',
-    bodyBottom: '#2c1848',
-    buttonRing: '#7c4db8',
-    screenBg: '#180e30',
+    label: 'Mist Sage',
+    body: '#e9ece6',
+    screenBg: '#f6f8f5',
+    accent: '#2d4a34',
+    buttonFill: '#2d4a34',
+    buttonText: '#ffffff',
   },
 };
 
@@ -60,18 +65,7 @@ export const TamagotchiShell: React.FC<TamagotchiShellProps> = ({
   onSelectTheme,
 }) => {
   const [scanlines, setScanlines] = useState(false);
-  const s = SHELL_STYLES[theme];
-
-  // Element-aware screen tint (subtle, not screaming)
-  const ELEMENT_TINT: Record<string, string> = {
-    FLORA: 'rgba(52,211,153,0.05)',
-    VOLT:  'rgba(251,191,36,0.06)',
-    FERRO: 'rgba(249,115,22,0.06)',
-    TIDAL: 'rgba(56,189,248,0.05)',
-    PRISM: 'rgba(236,72,153,0.05)',
-    VOID:  'rgba(139,92,246,0.06)',
-  };
-  const screenTint = ELEMENT_TINT[stats.element] ?? 'transparent';
+  const s = SHELL_STYLES[theme] || SHELL_STYLES.CYBER;
 
   const handleAction = (cb: () => void) => {
     soundFx.playClick();
@@ -79,18 +73,18 @@ export const TamagotchiShell: React.FC<TamagotchiShellProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 select-none w-full max-w-[300px]">
-
-      {/* Theme picker */}
-      <div className="flex items-center gap-1 bg-ink-800 border border-ink-600 rounded-2xl p-1 w-full">
+    <div className="flex flex-col items-center gap-4 select-none w-full max-w-[320px]">
+      
+      {/* Shell Finish Selector — Pill Toggle */}
+      <div className="flex items-center gap-1 bg-mist-gray p-1 rounded-full border border-black/[0.04] w-full">
         {(Object.keys(SHELL_STYLES) as ShellTheme[]).map((t) => (
           <button
             key={t}
             onClick={() => onSelectTheme(t)}
-            className={`flex-1 py-1 rounded-xl text-[10px] font-display font-semibold transition-all ${
+            className={`flex-1 py-1.5 rounded-full text-[12px] font-medium transition-all ${
               theme === t
-                ? 'bg-ink-600 text-ink-50 shadow-sm'
-                : 'text-ink-400 hover:text-ink-200'
+                ? 'bg-white text-ink-black shadow-sm font-semibold'
+                : 'text-slate-gray hover:text-ink-black'
             }`}
           >
             {SHELL_STYLES[t].label}
@@ -98,74 +92,77 @@ export const TamagotchiShell: React.FC<TamagotchiShellProps> = ({
         ))}
         <button
           onClick={() => setScanlines(!scanlines)}
-          title="Toggle CRT scanlines"
-          className={`px-2 py-1 rounded-xl text-[10px] font-mono transition-all ml-0.5 ${
-            scanlines ? 'bg-ink-500 text-ink-100' : 'text-ink-500 hover:text-ink-300'
+          title="Toggle CRT display lines"
+          className={`px-2.5 py-1 rounded-full text-[11px] font-mono transition-all ${
+            scanlines ? 'bg-ink-black text-white' : 'text-slate-gray hover:text-ink-black'
           }`}
         >
           CRT
         </button>
       </div>
 
-      {/* ─── Device body ─── */}
+      {/* ─── Hardware Specimen Device ─── */}
       <div
-        className="relative rounded-[36px] w-full device-shell overflow-hidden"
+        className="relative rounded-[36px] w-full designer-device-shell overflow-hidden transition-all duration-300"
         style={{
-          background: `linear-gradient(175deg, ${s.body} 0%, ${s.bodyBottom} 100%)`,
-          border: '1px solid rgba(255,255,255,0.08)',
+          backgroundColor: s.body,
+          border: '1px solid rgba(0, 0, 0, 0.08)',
         }}
       >
-        {/* Top label strip */}
-        <div className="px-6 pt-5 pb-1 flex items-center justify-between">
-          <span
-            className="font-pixel text-[7px] tracking-widest opacity-50"
-            style={{ color: s.buttonRing }}
+        {/* Top Header Strip */}
+        <div className="px-6 pt-5 pb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: s.accent }}
+            />
+            <span
+              className="font-mono text-[10px] tracking-wider uppercase font-semibold opacity-75"
+              style={{ color: s.accent }}
+            >
+              CRITTER #{stats.level.toString().padStart(3, '0')}
+            </span>
+          </div>
+
+          <div
+            className="flex items-center gap-1 text-[11px] font-mono font-medium opacity-75"
+            style={{ color: s.accent }}
           >
-            COMMIT CRITTER™
-          </span>
-          <div className="flex items-center gap-1.5 text-[9px] font-mono opacity-50"
-            style={{ color: s.buttonRing }}>
-            <BatteryMedium className="w-3 h-3" />
-            {stats.energy}%
+            <BatteryCharging className="w-3.5 h-3.5" />
+            <span>{stats.energy}%</span>
           </div>
         </div>
 
-        {/* ─── LCD Screen ─── */}
-        <div className="px-4 py-2">
+        {/* ─── Screen Window ─── */}
+        <div className="px-5 py-2">
           <div
-            className={`relative rounded-2xl overflow-hidden ${scanlines ? 'scanlines' : ''}`}
+            className={`relative rounded-2xl overflow-hidden border border-black/[0.08] transition-all ${
+              scanlines ? 'scanlines' : ''
+            }`}
             style={{
-              background: theme === 'GAMEBOY' ? '#8fae1b' : s.screenBg,
-              minHeight: '248px',
-              border: '3px solid rgba(0,0,0,0.35)',
-              boxShadow: 'inset 0 4px 16px rgba(0,0,0,0.5)',
+              backgroundColor: s.screenBg,
+              minHeight: '260px',
+              boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.04)',
             }}
           >
-            {/* Subtle element screen tint */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{ background: screenTint }}
-            />
-
-            {/* Mood chip */}
-            <div className="absolute top-2.5 left-0 right-0 flex justify-center z-10">
-              <div
-                className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-mono"
-                style={{
-                  background: 'rgba(0,0,0,0.45)',
-                  color: 'rgba(255,255,255,0.7)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                }}
-              >
-                {stats.mood === 'SLEEPING' ? <Moon className="w-2.5 h-2.5" /> : <Sun className="w-2.5 h-2.5" />}
-                <span>{stats.mood}</span>
-                <span className="opacity-40">·</span>
-                <span>{stats.element}</span>
+            {/* Mood & Element Pill Badge */}
+            <div className="absolute top-3 left-0 right-0 flex justify-center z-10">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-sans font-medium bg-white/90 backdrop-blur-sm border border-black/[0.06] text-ink-black shadow-sm">
+                {stats.mood === 'SLEEPING' ? (
+                  <Moon className="w-3 h-3 text-slate-gray" />
+                ) : (
+                  <Sun className="w-3 h-3 text-amber-500" />
+                )}
+                <span>{stats.mood.toLowerCase()}</span>
+                <span className="text-black/20">·</span>
+                <span className="font-mono text-[10px] text-slate-gray uppercase">
+                  {stats.element}
+                </span>
               </div>
             </div>
 
-            {/* Critter */}
-            <div className="flex items-center justify-center" style={{ minHeight: '220px' }}>
+            {/* Critter Sprite SVG */}
+            <div className="flex items-center justify-center pt-2" style={{ minHeight: '230px' }}>
               <CritterSprite
                 stage={stats.stage}
                 element={stats.element}
@@ -174,43 +171,37 @@ export const TamagotchiShell: React.FC<TamagotchiShellProps> = ({
               />
             </div>
 
-            {/* Level label */}
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-              <span
-                className="font-pixel text-[7px] px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'rgba(0,0,0,0.5)',
-                  color: 'rgba(255,255,255,0.6)',
-                }}
-              >
-                {stats.title} — LVL {stats.level}
+            {/* Stage / Name Bottom Pill */}
+            <div className="absolute bottom-2.5 left-0 right-0 flex justify-center">
+              <span className="font-mono text-[10px] px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm border border-black/[0.06] text-ink-black shadow-xs font-medium">
+                {stats.title} — Stage {stats.stage}
               </span>
             </div>
           </div>
         </div>
 
-        {/* ─── Action Buttons ─── */}
-        <div className="px-6 pt-3 pb-2 flex items-center justify-around">
+        {/* ─── Tactile Action Buttons ─── */}
+        <div className="px-6 pt-3 pb-3 flex items-center justify-around">
           {[
-            { label: 'PET',   icon: Heart,    cb: onPet,   color: '#e06b8a' },
-            { label: 'FEED',  icon: Utensils, cb: onFeed,  color: '#5a9e72' },
-            { label: 'CHEER', icon: Sparkles, cb: onCheer, color: '#e8b44a' },
-          ].map(({ label, icon: Icon, cb, color }) => (
+            { label: 'Pet', icon: Heart, cb: onPet },
+            { label: 'Feed', icon: Utensils, cb: onFeed },
+            { label: 'Cheer', icon: Sparkles, cb: onCheer },
+          ].map(({ label, icon: Icon, cb }) => (
             <div key={label} className="flex flex-col items-center gap-1.5">
               <button
                 onClick={() => handleAction(cb)}
-                className="w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 active:shadow-none hover:opacity-90"
+                className="w-13 h-13 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 hover:opacity-90 shadow-sm"
                 style={{
-                  background: `${color}22`,
-                  border: `2px solid ${color}50`,
-                  boxShadow: `0 3px 10px rgba(0,0,0,0.4)`,
+                  backgroundColor: s.buttonFill,
+                  color: s.buttonText,
                 }}
+                title={`${label} your critter`}
               >
-                <Icon className="w-5 h-5" style={{ color }} />
+                <Icon className="w-5 h-5" />
               </button>
               <span
-                className="font-pixel text-[7px] tracking-widest"
-                style={{ color: s.buttonRing, opacity: 0.6 }}
+                className="text-[11px] font-sans font-medium tracking-wide uppercase"
+                style={{ color: s.accent, opacity: 0.8 }}
               >
                 {label}
               </span>
@@ -218,27 +209,34 @@ export const TamagotchiShell: React.FC<TamagotchiShellProps> = ({
           ))}
         </div>
 
-        {/* Speaker dots */}
-        <div className="flex justify-center gap-1.5 pb-5 opacity-20">
+        {/* Minimal Speaker Grille */}
+        <div className="flex justify-center gap-1.5 pb-4 opacity-25">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="w-1 h-1 rounded-full" style={{ background: s.buttonRing }} />
+            <div
+              key={i}
+              className="w-1 h-1 rounded-full"
+              style={{ backgroundColor: s.accent }}
+            />
           ))}
         </div>
       </div>
 
-      {/* EXP bar below device */}
-      <div className="w-full">
-        <div className="flex justify-between text-[11px] font-mono text-ink-400 mb-1.5">
-          <span>Progress to next stage</span>
-          <span>{stats.exp} / {stats.maxExp} XP</span>
+      {/* Stage Evolution EXP Progress */}
+      <div className="w-full card-neutral p-3.5 flex flex-col gap-1.5">
+        <div className="flex justify-between items-baseline text-[12px] font-mono text-slate-gray">
+          <span>Evolution Progress</span>
+          <span className="font-semibold text-ink-black">
+            {stats.exp} / {stats.maxExp} XP
+          </span>
         </div>
-        <div className="stat-bar-track">
+        <div className="stat-bar-track-light">
           <div
-            className="stat-bar-fill bg-ember-DEFAULT"
+            className="stat-bar-fill-light bg-ink-black"
             style={{ width: `${Math.min(100, (stats.exp / stats.maxExp) * 100)}%` }}
           />
         </div>
       </div>
+
     </div>
   );
 };

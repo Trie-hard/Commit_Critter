@@ -11,23 +11,23 @@ import { soundFx } from './services/audioEngine';
 import { ShellTheme, GitHubActivityData } from './types/critter';
 import {
   Volume2, VolumeX, Trophy, Share2,
-  Search, Loader2, Github, AlertCircle,
+  Search, Loader2, Github, AlertCircle, ArrowRight
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [usernameInput, setUsernameInput]     = useState('Trie-hard');
-  const [isLoading, setIsLoading]             = useState(false);
-  const [errorMsg, setErrorMsg]               = useState<string | null>(null);
-  const [isMuted, setIsMuted]                 = useState(() => soundFx.getMuted());
-  const [shellTheme, setShellTheme]           = useState<ShellTheme>('CYBER');
-  const [showPassport, setShowPassport]       = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
+  const [usernameInput, setUsernameInput]         = useState('Trie-hard');
+  const [isLoading, setIsLoading]                 = useState(false);
+  const [errorMsg, setErrorMsg]                   = useState<string | null>(null);
+  const [isMuted, setIsMuted]                     = useState(() => soundFx.getMuted());
+  const [shellTheme, setShellTheme]               = useState<ShellTheme>('CYBER');
+  const [showPassport, setShowPassport]           = useState(false);
+  const [showAchievements, setShowAchievements]   = useState(false);
 
   const [activeProfile, setActiveProfile] = useState<GitHubActivityData>(() => ({
     username: 'Trie-hard',
     name: 'Trie Hard',
     avatarUrl: 'https://avatars.githubusercontent.com/u/148780287?v=4',
-    bio: 'Building awesome hackathon projects!',
+    bio: 'Building delightful software for humans & critters alike.',
     publicRepos: 12,
     totalRecentCommits: 32,
     streakDays: 6,
@@ -39,10 +39,10 @@ export const App: React.FC = () => {
       { name: 'Python',     percentage: 10, color: '#3572A5' },
     ],
     recentCommits: [
-      { id: 'th1', repo: 'Trie-hard/Commit_Critter', message: 'feat: warm indie redesign — no more neon robots', date: 'Just now' },
-      { id: 'th2', repo: 'Trie-hard/Commit_Critter', message: 'feat: ECG vitals & element-reactive ambient glow', date: '2h ago' },
-      { id: 'th3', repo: 'Trie-hard/Commit_Critter', message: 'feat: glass specimen case + orbital arcs', date: '4h ago' },
-      { id: 'th4', repo: 'Trie-hard/Commit_Critter', message: 'feat: procedural 8-bit audio engine', date: 'Yesterday' },
+      { id: 'th1', repo: 'Trie-hard/Commit_Critter', message: 'feat: editorial light design inspired by Steep & Refero', date: 'Just now' },
+      { id: 'th2', repo: 'Trie-hard/Commit_Critter', message: 'design: serif headlines on warm paper, peach accent card', date: '1h ago' },
+      { id: 'th3', repo: 'Trie-hard/Commit_Critter', message: 'feat: tactile designer shell and vital signs ledger', date: '3h ago' },
+      { id: 'th4', repo: 'Trie-hard/Commit_Critter', message: 'feat: procedural web audio synthesizer engine', date: 'Yesterday' },
       { id: 'th5', repo: 'Trie-hard/Commit_Critter', message: 'Initial commit: welcome to Commit Critter!', date: '2d ago' },
     ],
     isNightOwl: true,
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
       updateUserData(data);
       soundFx.playChirp();
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Could not fetch GitHub data.');
+      setErrorMsg(err instanceof Error ? err.message : 'Could not fetch GitHub profile.');
       soundFx.playError();
     } finally {
       setIsLoading(false);
@@ -84,193 +84,234 @@ export const App: React.FC = () => {
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   return (
-    <div className="min-h-[100dvh] bg-ink-950 text-ink-100 flex flex-col">
+    <div className="min-h-screen bg-[#fafafb] text-[#17191c] flex flex-col font-sans selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">
 
-      {/* ══════════════════ NAVBAR ══════════════════ */}
-      <header className="sticky top-0 z-40 bg-ink-950/90 backdrop-blur-md border-b border-ink-700">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      {/* ══════════════════════════════════════════════
+          TOP NAVIGATION (Steep Style: Quiet, borderless)
+      ══════════════════════════════════════════════ */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-black/[0.05]">
+        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
 
-          {/* Wordmark */}
+          {/* Logo & Category Tag */}
           <div className="flex items-center gap-3">
-            <span className="text-xl">🐾</span>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-bold text-sm text-ink-50 tracking-tight">
-                  Commit Critter
-                </span>
-                <span className="hidden sm:inline text-[10px] font-mono px-2 py-0.5 rounded-md bg-ember-dim border border-ember-muted text-ember-light">
-                  FirstCommit 2026
-                </span>
-              </div>
-              <p className="text-[11px] text-ink-400 font-mono hidden sm:block">
-                the virtual pet that lives off your GitHub commits
-              </p>
+            <span className="text-2xl">🐾</span>
+            <div className="flex items-baseline gap-2.5">
+              <span className="font-serif text-lg font-normal text-ink-black tracking-tight">
+                Commit Critter
+              </span>
+              <span className="text-[12px] font-sans text-slate-gray font-normal hidden sm:inline">
+                / FirstCommit 2026
+              </span>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
+          {/* Action Pills */}
+          <div className="flex items-center gap-2.5">
+            {/* Badges trigger */}
             <button
               onClick={() => { soundFx.playClick(); setShowAchievements(true); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-display font-semibold bg-ink-800 hover:bg-ink-700 border border-ink-600 hover:border-ink-500 text-ink-200 hover:text-ink-50 transition-all"
+              className="pill-button-ghost text-[13px]"
+              title="View unlocked badges"
             >
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Badges</span>
+              <Trophy className="w-3.5 h-3.5 text-amber-600" />
+              <span>Badges</span>
               {unlockedCount > 0 && (
-                <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-mist-gray text-[11px] font-mono font-semibold flex items-center justify-center">
                   {unlockedCount}
                 </span>
               )}
             </button>
 
+            {/* Passport Card trigger */}
             <button
               onClick={() => { soundFx.playClick(); setShowPassport(true); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-display font-semibold bg-ember-DEFAULT text-white hover:bg-ember-light transition-all"
-              style={{ boxShadow: '0 2px 8px rgba(232,115,58,0.3)' }}
+              className="pill-button-primary text-[13px]"
+              title="Export editorial passport card"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Share Card</span>
+              <span>Passport Card</span>
             </button>
 
+            {/* Audio Synth toggle */}
             <button
               onClick={() => setIsMuted(soundFx.toggleMute())}
-              className="p-2 rounded-xl bg-ink-800 hover:bg-ink-700 border border-ink-600 text-ink-300 hover:text-ink-100 transition-all"
-              title={isMuted ? 'Unmute' : 'Mute'}
+              className="w-9 h-9 rounded-full border border-black/[0.1] bg-white hover:bg-mist-gray flex items-center justify-center text-slate-gray hover:text-ink-black transition-all"
+              title={isMuted ? 'Unmute procedural audio' : 'Mute procedural audio'}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
 
+            {/* GitHub link */}
             <a
               href="https://github.com/Trie-hard/Commit_Critter"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-xl bg-ink-800 hover:bg-ink-700 border border-ink-600 text-ink-300 hover:text-ink-100 transition-all"
+              className="w-9 h-9 rounded-full border border-black/[0.1] bg-white hover:bg-mist-gray flex items-center justify-center text-slate-gray hover:text-ink-black transition-all"
+              title="View source on GitHub"
             >
               <Github className="w-4 h-4" />
             </a>
           </div>
+
         </div>
       </header>
 
-      {/* ══════════════════ HERO / SEARCH ══════════════════ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 w-full mt-8 animate-slide-up">
-        <div className="card p-6">
-          <div className="mb-5">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink-50 leading-snug">
-              Enter your GitHub username.
-              <br />
-              <span className="text-ember-DEFAULT">Your critter awaits.</span>
-            </h1>
-            <p className="text-sm text-ink-300 mt-2 max-w-md">
-              Your commit history becomes your pet's diet — the more you push,
-              the stronger it grows. Neglect it and it sulks. No pressure.
-            </p>
-          </div>
+      {/* ══════════════════════════════════════════════
+          HERO SECTION (Editorial Magazine Collage)
+      ══════════════════════════════════════════════ */}
+      <section className="max-w-[1200px] mx-auto px-6 pt-12 pb-8 w-full">
+        <div className="max-w-3xl">
 
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 max-w-lg">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-400" />
-              <input
-                type="text"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                placeholder="e.g. torvalds, gaearon, your-username..."
-                className="w-full bg-ink-900 border border-ink-600 focus:border-ember-DEFAULT focus:ring-1 focus:ring-ember-DEFAULT rounded-2xl pl-10 pr-4 py-2.5 text-sm font-mono text-ink-50 placeholder-ink-400 outline-none transition-all"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-ember-DEFAULT hover:bg-ember-light text-white font-display font-semibold text-sm transition-all disabled:opacity-50"
-              style={{ boxShadow: '0 2px 12px rgba(232,115,58,0.25)' }}
-            >
-              {isLoading
-                ? <><Loader2 className="w-4 h-4 animate-spin" /> Fetching...</>
-                : 'Hatch my critter'}
-            </button>
-          </form>
+          {/* Editorial Display Headline */}
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink-black tracking-tight leading-[1.18]">
+            Your commits, <br className="hidden sm:inline" />
+            <em className="font-serif italic font-normal text-ink-black">brought to life.</em>
+          </h1>
 
-          <div className="mt-4">
+          {/* Subtitle */}
+          <p className="font-sans text-base sm:text-lg text-slate-gray mt-4 max-w-2xl leading-relaxed">
+            Commit Critter turns your GitHub contributions into a living, responsive companion.
+            Daily pushes feed its energy, maintain your streak, and trigger elemental evolutions.
+          </p>
+
+          {/* AI Composer-Style Input (Steep Specification) */}
+          <div className="mt-8">
+            <form onSubmit={handleSearch} className="relative max-w-xl">
+              <div className="card-artifact p-2 pl-4 flex items-center gap-3 bg-white border border-black/[0.1] focus-within:border-ink-black transition-all">
+                <Search className="w-4 h-4 text-slate-gray shrink-0" />
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  placeholder="Enter a GitHub username (e.g. Trie-hard, torvalds)..."
+                  className="w-full bg-transparent outline-none text-sm text-ink-black placeholder:text-smoke-gray font-sans"
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="pill-button-primary shrink-0 text-[13px] py-2 px-5 disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Fetching...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Hatch Critter</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Quick Profiles Pills */}
             <QuickProfiles
               currentUsername={githubData.username}
               onSelectProfile={handleSelectQuickProfile}
             />
+
+            {/* Error Message */}
+            {errorMsg && (
+              <div className="flex items-center gap-2 mt-4 p-3 rounded-2xl bg-[#fee2e2] text-[#991b1b] text-xs font-sans">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
           </div>
 
-          {errorMsg && (
-            <div className="flex items-center gap-2 mt-3 p-3 rounded-xl bg-red-950/40 border border-red-900/60 text-red-300 text-sm font-mono">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              {errorMsg}
-            </div>
-          )}
         </div>
       </section>
 
-      {/* ══════════════════ COMMIT TICKER ══════════════════ */}
+      {/* ══════════════════════════════════════════════
+          QUIET COMMIT TICKER RIBBON
+      ══════════════════════════════════════════════ */}
       {githubData.recentCommits.length > 0 && (
-        <div className="mt-6 border-y border-ink-700 overflow-hidden relative" style={{ height: '34px' }}>
-          <div
-            className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to right, #0a0806, transparent)' }}
-          />
-          <div
-            className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to left, #0a0806, transparent)' }}
-          />
+        <div className="border-y border-black/[0.05] bg-white overflow-hidden relative h-9 my-4">
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
           <div className="ticker-track h-full flex items-center">
             {[...githubData.recentCommits, ...githubData.recentCommits].map((c, i) => (
               <div
                 key={`${c.id}-${i}`}
-                className="flex items-center gap-3 px-6 shrink-0 whitespace-nowrap"
+                className="flex items-center gap-2 px-6 shrink-0 whitespace-nowrap text-xs font-sans text-slate-gray"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-ember-DEFAULT opacity-70 shrink-0" />
-                <span className="text-[11px] font-mono text-ink-400">
-                  <span className="text-ink-300">{c.repo.split('/')[1]}</span>
-                  {' — '}
-                  {c.message}
-                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-ink-black/40" />
+                <span className="font-mono text-ink-black font-medium">{c.repo.split('/')[1] || c.repo}</span>
+                <span className="text-black/30">·</span>
+                <span className="text-slate-gray truncate max-w-sm">{c.message}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* ══════════════════ MAIN CONTENT ══════════════════ */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 mt-8 mb-44 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 items-start">
+      {/* ══════════════════════════════════════════════
+          MAIN 2-COLUMN ARTIFACT COLLAGE
+      ══════════════════════════════════════════════ */}
+      <main className="max-w-[1200px] mx-auto px-6 py-6 mb-36 w-full flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-10 items-start">
 
-          {/* Left: Device — sticky on desktop */}
-          <div className="lg:sticky lg:top-20 flex flex-col items-center gap-4">
+          {/* Left Column: Handheld Device Shell */}
+          <div className="lg:sticky lg:top-24 flex flex-col items-center">
             <TamagotchiShell
               stats={stats}
               theme={shellTheme}
               onPet={pet}
               onFeed={feedCommit}
-              onCheer={() => { soundFx.playLevelUp(); pet(); }}
-              onSelectTheme={(t) => { soundFx.playClick(); setShellTheme(t); }}
+              onCheer={() => {
+                soundFx.playLevelUp();
+                pet();
+              }}
+              onSelectTheme={(t) => {
+                soundFx.playClick();
+                setShellTheme(t);
+              }}
             />
           </div>
 
-          {/* Right: Stats */}
-          <div>
+          {/* Right Column: Floating Data Artifacts */}
+          <div className="flex justify-center lg:justify-start">
             <StatsDashboard stats={stats} githubData={githubData} />
           </div>
+
         </div>
       </main>
 
-      {/* ══════════════════ FOOTER ══════════════════ */}
-      <footer className="border-t border-ink-800 py-4 text-center text-[11px] font-mono text-ink-500">
-        Built with React · Canvas API · Web Audio API &nbsp;·&nbsp;
-        <a
-          href="https://github.com/Trie-hard/Commit_Critter"
-          className="hover:text-ink-300 transition-colors"
-          target="_blank" rel="noopener noreferrer"
-        >
-          Trie-hard/Commit_Critter
-        </a>
+      {/* ══════════════════════════════════════════════
+          EDITORIAL FOOTER
+      ══════════════════════════════════════════════ */}
+      <footer className="border-t border-black/[0.06] bg-white py-8 px-6 text-center text-xs font-sans text-slate-gray mt-auto">
+        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-ink-black font-medium">
+            <span>🐾 Commit Critter</span>
+            <span className="text-slate-gray font-normal">· FirstCommit Hackathon 2026</span>
+          </div>
+          <div className="flex items-center gap-6 text-slate-gray">
+            <a
+              href="https://github.com/Trie-hard/Commit_Critter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink-black transition-colors"
+            >
+              GitHub Repository
+            </a>
+            <a
+              href="https://styles.refero.design/style/75fdb89f-ca64-41b3-af36-7a78bd09448e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink-black transition-colors"
+            >
+              Steep Design Reference
+            </a>
+          </div>
+        </div>
       </footer>
 
-      {/* ══════════════════ OVERLAYS ══════════════════ */}
+      {/* ══════════════════════════════════════════════
+          JUDGE SANDBOX CONTROLS
+      ══════════════════════════════════════════════ */}
       <SandboxControls
         overrides={overrides}
         onSimulatePush={simulatePush}
@@ -279,12 +320,25 @@ export const App: React.FC = () => {
         onForceElement={forceElement}
         onReset={resetSandbox}
       />
+
+      {/* ══════════════════════════════════════════════
+          MODALS
+      ══════════════════════════════════════════════ */}
       {showPassport && (
-        <PassportGenerator stats={stats} githubData={githubData} onClose={() => setShowPassport(false)} />
+        <PassportGenerator
+          stats={stats}
+          githubData={githubData}
+          onClose={() => setShowPassport(false)}
+        />
       )}
+
       {showAchievements && (
-        <AchievementsModal achievements={achievements} onClose={() => setShowAchievements(false)} />
+        <AchievementsModal
+          achievements={achievements}
+          onClose={() => setShowAchievements(false)}
+        />
       )}
+
     </div>
   );
 };
