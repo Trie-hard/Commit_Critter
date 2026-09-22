@@ -11,6 +11,7 @@ import {
 } from '../types/critter';
 import { calculateCritterStats } from '../services/statCalculator';
 import { soundFx } from '../services/audioEngine';
+import { storageGet, storageSet } from '../services/storageService';
 
 const INITIAL_ACHIEVEMENTS: Achievement[] = [
   { id: 'first_commit', title: 'First Commit!', description: 'Hatched your pet with your first repository commit', icon: '🌱', unlocked: false },
@@ -53,6 +54,20 @@ export function useCritterEngine(initialData: GitHubActivityData) {
     ...calculatedStats,
     mood: temporaryMood || calculatedStats.mood,
   };
+
+  // Load achievements from storage on mount
+  useEffect(() => {
+    storageGet<Achievement[]>('commit_critter_achievements', INITIAL_ACHIEVEMENTS).then((saved) => {
+      if (Array.isArray(saved) && saved.length > 0) {
+        setAchievements(saved);
+      }
+    });
+  }, []);
+
+  // Save current stats to storage for extension overlay and background worker
+  useEffect(() => {
+    storageSet('commit_critter_stats', effectiveStats);
+  }, [effectiveStats]);
 
   // Evolution & Celebration watcher
   useEffect(() => {
@@ -102,7 +117,7 @@ export function useCritterEngine(initialData: GitHubActivityData) {
       });
 
       if (updated) {
-        localStorage.setItem('commit_critter_achievements', JSON.stringify(next));
+        storageSet('commit_critter_achievements', next);
       }
       return updated ? next : prev;
     });

@@ -6,17 +6,25 @@ class AudioEngine {
   private isMuted: boolean = false;
 
   constructor() {
-    // Check saved mute state
-    const savedMute = localStorage.getItem('commit_critter_muted');
-    this.isMuted = savedMute === 'true';
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        const savedMute = localStorage.getItem('commit_critter_muted');
+        this.isMuted = savedMute === 'true';
+      } catch {
+        this.isMuted = false;
+      }
+    }
   }
 
   private initCtx() {
+    if (typeof window === 'undefined') return;
     if (!this.ctx) {
       const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctx = new AudioContextClass();
+      if (AudioContextClass) {
+        this.ctx = new AudioContextClass();
+      }
     }
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchGitHubUserData } from './services/githubService';
 import { useCritterEngine } from './hooks/useCritterEngine';
 import { TamagotchiShell } from './components/TamagotchiShell';
@@ -8,10 +8,11 @@ import { PassportGenerator } from './components/PassportGenerator';
 import { AchievementsModal } from './components/AchievementsModal';
 import { QuickProfiles } from './components/QuickProfiles';
 import { soundFx } from './services/audioEngine';
+import { storageGet } from './services/storageService';
 import { ShellTheme, GitHubActivityData } from './types/critter';
 import {
   Volume2, VolumeX, Trophy, Share2,
-  Search, Loader2, Github, AlertCircle, ArrowRight
+  Search, Loader2, Github, AlertCircle, ArrowRight, Maximize2
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -81,7 +82,120 @@ export const App: React.FC = () => {
     setErrorMsg(null);
   };
 
+  // Restore saved data on load
+  useEffect(() => {
+    storageGet<GitHubActivityData | null>('commit_critter_latest_data', null).then((saved) => {
+      if (saved && saved.username) {
+        setActiveProfile(saved);
+        setUsernameInput(saved.username);
+        updateUserData(saved);
+      }
+    });
+  }, []);
+
+  const isPopupMode =
+    typeof window !== 'undefined' &&
+    (window.location.pathname.includes('popup.html') ||
+      window.location.search.includes('mode=popup') ||
+      (window.innerWidth <= 420 && window.innerHeight <= 650));
+
+  const openFullDashboard = () => {
+    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.runtime?.getURL) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+    } else {
+      window.open('index.html', '_blank');
+    }
+  };
+
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
+
+  // Dedicated Compact Popup UI for Extension Toolbar
+  if (isPopupMode) {
+    return (
+      <div className="w-full min-h-[560px] bg-white text-ink-black flex flex-col p-4 font-sans selection:bg-peach selection:text-sienna">
+        {/* Compact Popup Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-black/[0.06] mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🐾</span>
+            <div>
+              <div className="font-serif text-base font-normal text-ink-black leading-none">
+                Commit Critter
+              </div>
+              <div className="text-[11px] text-slate-gray font-mono mt-1">
+                @{githubData.username} · Lv.{stats.level}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                soundFx.playClick();
+                setShowAchievements(true);
+              }}
+              className="p-1.5 rounded-full border border-black/[0.08] hover:bg-mist-gray text-slate-gray hover:text-ink-black transition-all"
+              title="Achievements"
+            >
+              <Trophy className="w-3.5 h-3.5 text-amber-600" />
+            </button>
+            <button
+              onClick={() => setIsMuted(soundFx.toggleMute())}
+              className="p-1.5 rounded-full border border-black/[0.08] hover:bg-mist-gray text-slate-gray hover:text-ink-black transition-all"
+              title={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
+            <button
+              onClick={openFullDashboard}
+              className="p-1.5 rounded-full border border-black/[0.08] hover:bg-mist-gray text-slate-gray hover:text-ink-black transition-all"
+              title="Open Full Editorial Dashboard"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Tactile Device Shell */}
+        <div className="flex-1 flex flex-col items-center justify-center py-1">
+          <TamagotchiShell
+            stats={stats}
+            theme={shellTheme}
+            onPet={pet}
+            onFeed={feedCommit}
+            onCheer={() => {
+              soundFx.playLevelUp();
+              pet();
+            }}
+            onSelectTheme={(t) => {
+              soundFx.playClick();
+              setShellTheme(t);
+            }}
+          />
+        </div>
+
+        {/* Quick Footer Action to Open Dashboard */}
+        <div className="pt-2 border-t border-black/[0.06] mt-2 flex items-center justify-between text-xs">
+          <span className="font-mono text-slate-gray text-[11px]">
+            {githubData.streakDays}d streak · {githubData.totalRecentCommits} commits
+          </span>
+          <button
+            onClick={openFullDashboard}
+            className="text-link-arrow text-[12px] font-medium"
+          >
+            <span>Dashboard</span>
+            <ArrowRight className="w-3 h-3 inline" />
+          </button>
+        </div>
+
+        {/* Modals */}
+        {showAchievements && (
+          <AchievementsModal
+            achievements={achievements}
+            onClose={() => setShowAchievements(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fafafb] text-[#17191c] flex flex-col font-sans selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">

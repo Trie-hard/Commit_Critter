@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Commit Critter — GitHub Virtual Pet",
+  "version": "1.1.0",
+  "description": "Your GitHub virtual pet that thrives on commits, streak habits, and clean code.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Check on your Commit Critter",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "background": {
+    "service_worker": "serviceWorker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "js": ["githubOverlay.js"],
+      "css": ["overlay.css"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*"
+  ]
+}

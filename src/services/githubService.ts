@@ -1,4 +1,5 @@
 import { GitHubActivityData, CommitItem, LanguageStat } from '../types/critter';
+import { storageGet, storageSet } from './storageService';
 
 // Standard programming language brand colors
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -128,17 +129,14 @@ export async function fetchGitHubUserData(username: string): Promise<GitHubActiv
     return CURATED_PROFILES[cleanUsername];
   }
 
-  // Check local cache to respect GitHub API rate limits
+  // Check local/extension storage cache to respect GitHub API rate limits
   const cacheKey = `critter_gh_${cleanUsername}`;
-  const cached = localStorage.getItem(cacheKey);
-  if (cached) {
-    try {
-      const parsed = JSON.parse(cached);
-      if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
-        return parsed.data;
-      }
-    } catch {
-      // Ignore cache parse error
+  const cached = await storageGet<{ timestamp: number; data: GitHubActivityData } | null>(cacheKey, null);
+  if (cached && typeof cached === 'object' && cached.timestamp && cached.data) {
+    if (Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      await storageSet('commit_critter_active_username', cleanUsername);
+      await storageSet('commit_critter_latest_data', cached.data);
+      return cached.data;
     }
   }
 
@@ -261,18 +259,24 @@ export async function fetchGitHubUserData(username: string): Promise<GitHubActiv
       isWeekendWarrior: weekendCommits > 3,
     };
 
-    // Save to local cache
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: processedData }));
-    } catch {
-      // Storage quota safe
-    }
+    // Save to storage cache
+    await storageSet(cacheKey, { timestamp: Date.now(), data: processedData });
+    await storageSet('commit_critter_active_username', cleanUsername);
+    await storageSet('commit_critter_latest_data', processedData);
 
     return processedData;
   } catch (err: unknown) {
     console.warn('API error fetching user, falling back to simulated profile:', err);
     return createFallbackProfile(username, false);
   }
+}
+
+export async function getActiveUsername(): Promise<string> {
+  return await storageGet<string>('commit_critter_active_username', 'Trie-hard');
+}
+
+export async function getLatestUserData(): Promise<GitHubActivityData | null> {
+  return await storageGet<GitHubActivityData | null>('commit_critter_latest_data', null);
 }
 
 function calculateStreak(dates: Set<string>): number {
